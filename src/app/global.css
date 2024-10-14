@@ -3,19 +3,23 @@
 }
 
 ::-webkit-scrollbar:vertical {
-    width: 10px;
+    width: 5px;
 }
 
 ::-webkit-scrollbar:horizontal {
-    height: 10px;
+    height: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, .5);
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 ::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0);
+    border-radius: 5px;
+    background-color: transparent;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace!important;
 }

@@ -14,8 +14,11 @@ export default function Products({ products, bgColor }: ProductsProps) {
                     title={product.title}
                     value={product.value}
                     image={product.image}
+                    sectionId={product.sectionId}
                     bgColor={bgColor}
-                />)}
+                />
+            )}
+            <li style={{ width: "120px", height: "120px" }}></li>
         </ul>
     )
 }

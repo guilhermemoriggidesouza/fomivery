@@ -5,6 +5,7 @@ export type ProductItem = {
     title: string,
     value: string,
     image: string,
+    sectionId: number
 }
 export type ProductsItemProps = {
     bgColor: string
@@ -13,17 +14,17 @@ export type ProductsItemProps = {
 export default function Product(product: ProductsItemProps) {
     return (
         <>
-            <li className="px-4 pb-4" >
-                <div className="p-2 rounded rounded-sm" style={{backgroundColor: product.bgColor }}>
+            <li className="px-4 pb-4" key={product.id} >
+                <div className="p-2 rounded rounded-sm" style={{ backgroundColor: product.bgColor }}>
                     <div className="flex justify-between">
-                        <p className="text-xl font-bold	">{product.title}</p>
+                        <p className="font-bold	inline-block mr-2" >{product.title}</p>
                         <div >
-                            <span>R$ {product.value}</span>
-                            {product.image && <span className="ml-4">foto</span>}
+                            <span className="inline-block">R$ {product.value}</span>
+                            {product.image && <span className="ml-4 inline-block font subline">foto</span>}
                         </div>
 
                     </div>
-                    <p>{product.description}</p>
+                    <p >{product.description}</p>
                 </div>
             </li>
         </>
