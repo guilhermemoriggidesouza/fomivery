@@ -1,6 +1,15 @@
-import { sql } from "drizzle-orm";
-import { text, sqliteTable } from "drizzle-orm/sqlite-core";
+import { text, sqliteTable, numeric, integer } from "drizzle-orm/sqlite-core";
 
-export const userTable = sqliteTable("foo", {
-  bar: text("bar").notNull().default("Hey!"),
+export const sectionTable = sqliteTable("section", {
+  id: numeric('id').primaryKey(),
+  title: text("title").notNull(),
+})
+
+export const productTable = sqliteTable("product", {
+  id: integer('id').primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  value: numeric("value").notNull(),
+  image: text("image").notNull(),
+  section_id: integer("section_id").notNull().references(() => sectionTable.id)
 });

@@ -4,15 +4,6 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { HydrateClient } from "~/trpc/server";
 import { TRPCReactProvider } from "~/trpc/react";
-import Registry from "~/infra/di";
-import UserRepositoryImp from "~/infra/repositories/user.imp";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs'
 import './global.css'
 
 export const metadata: Metadata = {
@@ -25,21 +16,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
 
-  const registry = Registry.getInstance()
-  registry.provide("userRepository", new UserRepositoryImp())
-
   return (
-    <ClerkProvider>
-
-      <html lang="en" style={{overflow: "hidden"}}>
-        <body className={GeistSans.className} style={{overflow: "hidden"}}>
-          <TRPCReactProvider>
-            <HydrateClient>
-              {children}
-            </HydrateClient>
-          </TRPCReactProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" style={{ overflow: "hidden" }}>
+      <body className={GeistSans.className} style={{ overflow: "hidden" }}>
+        <TRPCReactProvider>
+          <HydrateClient>
+            {children}
+          </HydrateClient>
+        </TRPCReactProvider>
+      </body>
+    </html>
   );
 }

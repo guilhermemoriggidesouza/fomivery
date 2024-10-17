@@ -1,19 +1,90 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "62af3f27-6291-4a49-a1f5-771d7263e2a9",
+  "id": "8e18b475-f1c8-47b3-b4a7-ed4dbe50ac0b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "foo": {
-      "name": "foo",
+    "product": {
+      "name": "product",
       "columns": {
-        "bar": {
-          "name": "bar",
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "'Hey!'"
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "section_id": {
+          "name": "section_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "product_section_id_section_id_fk": {
+          "name": "product_section_id_section_id_fk",
+          "tableFrom": "product",
+          "tableTo": "section",
+          "columnsFrom": [
+            "section_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "section": {
+      "name": "section",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "numeric",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},

@@ -1,7 +1,7 @@
-import { authRouter } from "~/server/api/routers/login";
+import { menuRouter } from "~/server/api/routers/menu";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 export const appRouter = createTRPCRouter({
-  auth: authRouter,
+  menu: menuRouter,
 });
 export type AppRouter = typeof appRouter;
 export const createCaller = createCallerFactory(appRouter);

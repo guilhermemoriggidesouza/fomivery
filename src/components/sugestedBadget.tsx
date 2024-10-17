@@ -10,7 +10,7 @@ export default function SugestedBadge({ onClose, bgColor, sugested, length, valu
     return (
         <div className="flex p-2 justify-between mb-4" style={{ backgroundColor: bgColor }}>
             <p>
-                Sugestões geradas: {length} <br /> Total: R$ {value.toFixed(2)}
+                Sugestões geradas: {length} <br /> Total: R$ {value?.toFixed(2)}
             </p>
             <span className="px-2 my-auto" onClick={onClose}>x</span>
         </div>

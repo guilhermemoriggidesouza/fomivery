@@ -1,15 +1,10 @@
 "use client"
-export type ProductItem = {
-    id: number
-    description: string,
-    title: string,
-    value: string,
-    image: string,
-    sectionId: number
-}
+
+import ProductDomain from "~/domain/product"
+
 export type ProductsItemProps = {
     bgColor: string
-} & ProductItem
+} & ProductDomain
 
 export default function Product(product: ProductsItemProps) {
     return (
