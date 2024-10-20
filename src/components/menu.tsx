@@ -23,7 +23,6 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
     const [openSugestion, setOpenSugestion] = useState(false);
     const [sugested, setSugested] = useState<boolean>(false);
     const [sugestionValue, setSugestionValue] = useState<number | undefined>();
-    const [sugestionAmmount, setSugestionAmmount] = useState<number | undefined>();
     const { data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
         sectionId: section!.id,
     }, {
@@ -41,6 +40,9 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
         const newArray = sectionList.map(section => {
             if (section.id == id) {
                 section.selected = true
+                if (sugested && sugestionValue) {
+                    mutate({ sugestionValue, sectionId: section.id })
+                }
                 setSection(section)
             } else {
                 section.selected = false
@@ -62,20 +64,17 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
         if (!sugestionValue) {
             alert("insira um valor")
         }
-        if (!sugestionAmmount) {
-            alert("insira uma quantidade")
-        }
-
-        if (!sugestionAmmount || !sugestionValue) {
+        if (!sugestionValue) {
             return
         }
-        mutate({ sugestionAmmount, sugestionValue, sectionId: section.id })
+        mutate({ sugestionValue, sectionId: section.id })
         setSugested(true)
         setOpenSugestion(false)
     }
 
     const handlerCleanSugestion = () => {
         setSugested(false)
+        setSugestionValue(undefined)
         refetchGetProducts()
     }
 
@@ -83,7 +82,7 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
         <>
             <Sections sections={sectionList} bgColor={bgColor} changeSection={changeSection} />
             <div style={{ margin: "auto", maxWidth: "600px" }}>
-                {dataSugested?.products ?
+                {(sugested && dataSugested && dataSugested.products) ?
                     <>
                         <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} bgColor={bgColor} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
                         <Products products={dataSugested.products} bgColor={bgColor} />
@@ -108,7 +107,7 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
             <SugestionModal
                 open={openSugestion}
                 onOpenChange={setOpenSugestion}
-                description="Insira um valor e quantidade de produtos que iremos te sugerir opções aproximadas esse valor"
+                description="Insira um valor que iremos te sugerir opções aproximadas desse valor"
                 title="Sugestion"
                 saveButton={<>
                     <Button variant="outline" onClick={(e) => getProductSugestions()}>
@@ -117,15 +116,6 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
                 </>}
             >
                 <>
-                    <Label htmlFor="sugestionValue" className="text-left">
-                        Quantidade produtos:
-                    </Label>
-                    <Input
-                        type="number"
-                        placeholder="5"
-                        onChange={(e) => setSugestionAmmount(Number(e.target.value))}
-                        id="sugestionValue"
-                    />
                     <Label htmlFor="sugestionValue" className="text-left">
                         Valor em Reais:
                     </Label>
