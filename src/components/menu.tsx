@@ -11,6 +11,8 @@ import { Input } from "./ui/input";
 import SugestedBadge from "./sugestedBadget";
 import { api } from "~/trpc/react";
 import Product from "~/domain/product";
+import Link from "next/link";
+import { CartModal } from "./cart";
 
 export type MenuProp = {
     sections: SectionItem[],
@@ -21,8 +23,10 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
     const [sectionList, setSectionList] = useState(sections)
     const [section, setSection] = useState<SectionItem>(sections[0]!)
     const [openSugestion, setOpenSugestion] = useState(false);
+    const [openCart, setOpenCart] = useState(false);
     const [sugested, setSugested] = useState<boolean>(false);
     const [sugestionValue, setSugestionValue] = useState<number | undefined>();
+    const [boughtProducts, setBoughtProducts] = useState<Product[]>([])
     const { data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
         sectionId: section!.id,
     }, {
@@ -53,7 +57,7 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
     }
 
     const handleOpenCartModal = () => {
-
+        setOpenCart(true)
     }
 
     const handleOpenSugestionModal = () => {
@@ -78,6 +82,18 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
         refetchGetProducts()
     }
 
+    const handlerRemoveItem = (index: number) => {
+        boughtProducts.splice(index, 1)
+        const newArray = [...boughtProducts]
+        setBoughtProducts(newArray)
+    }
+
+    const handerAddProduct = (product: Product) => {
+        const newArray = [...boughtProducts]
+        newArray.push(product)
+        setBoughtProducts(newArray)
+    }
+
     return (
         <>
             <Sections sections={sectionList} bgColor={bgColor} changeSection={changeSection} />
@@ -85,17 +101,20 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
                 {(sugested && dataSugested && dataSugested.products) ?
                     <>
                         <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} bgColor={bgColor} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
-                        <Products products={dataSugested.products} bgColor={bgColor} />
+                        <Products products={dataSugested.products} bgColor={bgColor} onAddProduct={handerAddProduct} />
                     </>
                     :
-                    <Products products={dataGetProducts.products} bgColor={bgColor} />
+                    <Products products={dataGetProducts.products} bgColor={bgColor} onAddProduct={handerAddProduct} />
                 }
             </div>
 
             <FloatingButton bottomPosition="bottom-20" >
-                <button onClick={handleOpenCartModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
-                    <p>Carrinho</p>
-                </button>
+                <>
+                    {boughtProducts.length > 0 && <div style={{ marginLeft: "-10px", marginBottom: "-20px", zIndex: "10" }} className="relative bg-red-500 text-white rouded rounded-full h-8 w-8 flex justify-center align-center items-center"><span className="m-auto">{boughtProducts.length}</span></div>}
+                    <button onClick={handleOpenCartModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
+                        <p>Carrinho</p>
+                    </button>
+                </>
             </FloatingButton >
 
             <FloatingButton bottomPosition="bottom-6" >
@@ -108,7 +127,7 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
                 open={openSugestion}
                 onOpenChange={setOpenSugestion}
                 description="Insira um valor que iremos te sugerir opções aproximadas desse valor"
-                title="Sugestion"
+                title="Até quanto você pretende gastar?"
                 saveButton={<>
                     <Button variant="outline" onClick={(e) => getProductSugestions()}>
                         Filtrar produtos
@@ -127,6 +146,24 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
                     />
                 </>
             </SugestionModal>
+            <CartModal
+                open={openCart}
+                onOpenChange={setOpenCart}
+                description="Assim que confirmar, basta fechar o pedido"
+                title="Aqui está seus itens"
+                saveButton={<>
+                    <Button variant="outline" onClick={(e) => getProductSugestions()}>
+                        Fechar pedido
+                    </Button>
+                </>}
+            >
+                <>
+                    {boughtProducts.map((item, i) => <p>
+                        <span className="text-lg mr-4" onClick={() => handlerRemoveItem(i)}>X</span>
+                        {item.title}
+                    </p>)}
+                </>
+            </CartModal>
         </>
     )
 

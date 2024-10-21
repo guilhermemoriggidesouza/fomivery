@@ -1,11 +1,15 @@
 "use client"
 import ProductDomain from "~/domain/product"
 import Product from "./product"
+import { RefObject, useRef, useState } from "react"
 export type ProductsProps = {
     products: ProductDomain[]
-    bgColor: string
+    bgColor: string,
+    onAddProduct: (p: ProductDomain) => void
 }
-export default function Products({ products, bgColor }: ProductsProps) {
+
+export default function Products({ products, bgColor, onAddProduct }: ProductsProps) {
+
     return (
         <ul className="first:pt-4 list-none	">
             {products.map((product: ProductDomain) =>
@@ -18,6 +22,7 @@ export default function Products({ products, bgColor }: ProductsProps) {
                     image={product.image}
                     sectionId={product.sectionId}
                     bgColor={bgColor}
+                    onClick={(e) => onAddProduct(product)}
                 />
             )}
             <li key={products.length + 1} style={{ width: "120px", height: "120px" }}></li>
