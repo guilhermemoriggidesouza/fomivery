@@ -13,6 +13,7 @@ import { api } from "~/trpc/react";
 import Product from "~/domain/product";
 import { CartModal } from "./cart";
 import ThemeProvider from "~/context/themeProvider";
+import Loading from "./ui/loading";
 
 export type MenuProp = {
     sections: SectionItem[],
@@ -43,6 +44,10 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId }: 
     })
     const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
 
+    const generateOrder = (data: string) => {
+        alert("gen order" + data)
+    }
+    const { isPending, mutate: mutateOrder } = api.menu.createOrder.useMutation({ onSuccess: generateOrder })
     const changeSection = (id: number) => {
         const newArray = sectionList.map(section => {
             if (section.id == id) {
@@ -95,10 +100,6 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId }: 
         const newArray = [...boughtProducts]
         newArray.push(product)
         setBoughtProducts(newArray)
-    }
-
-    const generateOrder = () => {
-        alert("gen order")
     }
 
     return (
@@ -155,13 +156,21 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId }: 
             </SugestionModal>
             <CartModal
                 open={openCart}
-                onOpenChange={setOpenCart}
+                onOpenChange={(value) => {
+                    if (!isPending)
+                        setOpenCart(value)
+                }}
                 description="Assim que confirmar, basta fechar o pedido"
                 title="Aqui está seus itens"
                 saveButton={<>
-                    <Button variant="outline" onClick={(e) => generateOrder()}>
-                        Fechar pedido
-                    </Button>
+                    {!isPending ?
+                        <Button variant="outline" onClick={(e) =>
+                            mutateOrder({ ids: boughtProducts.map(b => b.id) })
+                        }>
+                            Fechar pedido
+                        </Button> : <div className="w-100 flex justify-center"><Loading /></div>
+                    }
+
                 </>}
             >
                 <>

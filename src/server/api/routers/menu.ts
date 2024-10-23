@@ -4,7 +4,9 @@ import GetProducts from "~/application/usecases/getProducts";
 import ProductRepositoryImp from "~/infra/repositories/product.imp";
 
 import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
-
+function wait(ms: any, value: any) {
+  return new Promise(resolve => setTimeout(resolve, ms, value));
+}
 export const menuRouter = createTRPCRouter({
   createSugestion: publicRoute
     .input(z.object({ sugestionValue: z.number(), sectionId: z.number(), orgId: z.number() }))
@@ -21,5 +23,10 @@ export const menuRouter = createTRPCRouter({
       const getProducts = new GetProducts(productRepository)
       const products = await getProducts.execute(input)
       return products
+    }),
+  createOrder: publicRoute
+    .input(z.object({ ids: z.array(z.number()) }))
+    .mutation(async ({ ctx, input }) => {
+      return await wait(10000, "123")
     }),
 });

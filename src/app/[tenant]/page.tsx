@@ -2,11 +2,12 @@
 import { api } from "~/trpc/server";
 import Menu from "~/components/menu";
 import Section from "~/domain/section";
+import NotFound from "~/components/notFound";
 
 export default async function Home({ params }: { params: { tenant: string } }) {
   const dataOrg = await api.org.getOrg({ tenant: params.tenant })
-  if(!dataOrg) {
-    return <p>error</p>
+  if (!dataOrg) {
+    return <NotFound />
   }
   const dataSection = await api.section.getSection({ orgId: dataOrg.id })
   const dataProducts = await api.menu.getProducts({ sectionId: dataSection[0]!.id, orgId: dataOrg.id })
