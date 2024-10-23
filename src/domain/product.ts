@@ -6,6 +6,7 @@ export default class Product {
         public readonly value: number,
         public readonly image: string,
         public readonly sectionId: number,
+        public readonly orgId: number,
     ) {
 
     }

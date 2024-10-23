@@ -1,17 +1,19 @@
 "use client"
 
+import { useContext } from "react"
+import { ThemeContext } from "~/context/themeProvider"
 import ProductDomain from "~/domain/product"
-
 export type ProductsItemProps = {
-    bgColor: string
     onClick: (e: any) => void,
 } & ProductDomain
 
-export default function Product({ title, id, value, image, description, bgColor, onClick }: ProductsItemProps,) {
+export default function Product({ title, id, value, image, description, onClick }: ProductsItemProps,) {
+    const { theme: { bgColor, fontColor } } = useContext(ThemeContext)
+
     return (
         <>
-            <li id={`item-${id}`} className={`px-4 pb-4 transform active:scale-90`} key={id} >
-                <div className="p-2 rounded rounded-sm" onClick={onClick} style={{ backgroundColor: bgColor }}>
+            <li id={`item-${id}`} className={`px-4 pb-4 transition ease-in-out transform active:scale-90`} key={id} >
+                <div className="p-2 rounded rounded-sm" onClick={onClick} style={{ color: fontColor, backgroundColor: bgColor }}>
                     <div className="flex justify-between">
                         <p className="font-bold	inline-block mr-2" >{title}</p>
                         <div >

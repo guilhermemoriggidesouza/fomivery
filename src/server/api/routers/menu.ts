@@ -7,7 +7,7 @@ import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
 
 export const menuRouter = createTRPCRouter({
   createSugestion: publicRoute
-    .input(z.object({ sugestionValue: z.number(), sectionId: z.number() }))
+    .input(z.object({ sugestionValue: z.number(), sectionId: z.number(), orgId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const productRepository = new ProductRepositoryImp();
       const createSugestionUseCase = new CreatSugestionUseCase(productRepository)
@@ -15,7 +15,7 @@ export const menuRouter = createTRPCRouter({
       return sugestedMenu
     }),
   getProducts: publicRoute
-    .input(z.object({ sectionId: z.number() }))
+    .input(z.object({ sectionId: z.number(), orgId: z.number() }))
     .query(async ({ ctx, input }) => {
       const productRepository = new ProductRepositoryImp();
       const getProducts = new GetProducts(productRepository)

@@ -1,6 +1,6 @@
 INSERT INTO
-    section (id, title)
+    section (title, org_id)
 VALUES
-    (1, "Lanche"),
-    (2, "bebida"),
-    (3, "salgado")
+    ("Lanche",1),
+    ("bebida",1),
+    ("salgado",1)

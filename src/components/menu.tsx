@@ -11,15 +11,18 @@ import { Input } from "./ui/input";
 import SugestedBadge from "./sugestedBadget";
 import { api } from "~/trpc/react";
 import Product from "~/domain/product";
-import Link from "next/link";
 import { CartModal } from "./cart";
+import ThemeProvider from "~/context/themeProvider";
 
 export type MenuProp = {
     sections: SectionItem[],
     products: Product[],
-    bgColor: string
+    bgColor: string,
+    fontColor: string,
+    orgId: number
 }
-export default function Menu({ sections, products, bgColor }: MenuProp) {
+
+export default function Menu({ sections, products, bgColor, fontColor, orgId }: MenuProp) {
     const [sectionList, setSectionList] = useState(sections)
     const [section, setSection] = useState<SectionItem>(sections[0]!)
     const [openSugestion, setOpenSugestion] = useState(false);
@@ -28,9 +31,9 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
     const [sugestionValue, setSugestionValue] = useState<number | undefined>();
     const [boughtProducts, setBoughtProducts] = useState<Product[]>([])
     const { data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
-        sectionId: section!.id,
+        sectionId: section!.id, orgId
     }, {
-        initialData: { products },
+        initialData: products,
         retryOnMount: false,
         refetchOnMount: false,
         refetchOnReconnect: false,
@@ -45,7 +48,7 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
             if (section.id == id) {
                 section.selected = true
                 if (sugested && sugestionValue) {
-                    mutate({ sugestionValue, sectionId: section.id })
+                    mutate({ sugestionValue, sectionId: section.id, orgId })
                 }
                 setSection(section)
             } else {
@@ -71,7 +74,7 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
         if (!sugestionValue) {
             return
         }
-        mutate({ sugestionValue, sectionId: section.id })
+        mutate({ sugestionValue, sectionId: section.id, orgId })
         setSugested(true)
         setOpenSugestion(false)
     }
@@ -94,17 +97,21 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
         setBoughtProducts(newArray)
     }
 
+    const generateOrder = () => {
+        alert("gen order")
+    }
+
     return (
-        <>
-            <Sections sections={sectionList} bgColor={bgColor} changeSection={changeSection} />
+        <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
+            <Sections sections={sectionList} changeSection={changeSection} />
             <div style={{ margin: "auto", maxWidth: "600px" }}>
                 {(sugested && dataSugested && dataSugested.products) ?
                     <>
-                        <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} bgColor={bgColor} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
-                        <Products products={dataSugested.products} bgColor={bgColor} onAddProduct={handerAddProduct} />
+                        <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
+                        <Products products={dataSugested.products} onAddProduct={handerAddProduct} />
                     </>
                     :
-                    <Products products={dataGetProducts.products} bgColor={bgColor} onAddProduct={handerAddProduct} />
+                    <Products products={dataGetProducts} onAddProduct={handerAddProduct} />
                 }
             </div>
 
@@ -152,19 +159,19 @@ export default function Menu({ sections, products, bgColor }: MenuProp) {
                 description="Assim que confirmar, basta fechar o pedido"
                 title="Aqui está seus itens"
                 saveButton={<>
-                    <Button variant="outline" onClick={(e) => getProductSugestions()}>
+                    <Button variant="outline" onClick={(e) => generateOrder()}>
                         Fechar pedido
                     </Button>
                 </>}
             >
                 <>
-                    {boughtProducts.map((item, i) => <p>
-                        <span className="text-lg mr-4" onClick={() => handlerRemoveItem(i)}>X</span>
+                    {boughtProducts.map((item, i) => <p className="text-ellipsis">
+                        <span className="text-md mr-4 p-4" onClick={() => handlerRemoveItem(i)}>x</span>
                         {item.title}
                     </p>)}
                 </>
             </CartModal>
-        </>
+        </ThemeProvider>
     )
 
 }

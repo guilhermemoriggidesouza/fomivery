@@ -8,6 +8,27 @@
       "when": 1728953038321,
       "tag": "0000_polite_the_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1729644089283,
+      "tag": "0001_first_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1729644961106,
+      "tag": "0002_fixed_mattie_franklin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1729645914818,
+      "tag": "0003_living_goblin_queen",
+      "breakpoints": true
     }
   ]
 }

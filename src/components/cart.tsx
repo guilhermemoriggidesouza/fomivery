@@ -1,5 +1,5 @@
 import { Dispatch, ReactElement, SetStateAction } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 
 export type CartProps = {
     children: ReactElement,
@@ -11,19 +11,22 @@ export type CartProps = {
 
 }
 
-export function CartModal({ title, description, children, open, onOpenChange }: CartProps) {
+export function CartModal({ title, description, children, open, saveButton, onOpenChange }: CartProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-white sm:max-w-[425px] h-max-screen">
+            <DialogContent className="bg-white sm:max-w-[425px] max-h-full">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>
                         {description}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="overflow-y-auto">
+                <div className="overflow-y-auto ">
                     {children}
                 </div>
+                <DialogFooter>
+                    {saveButton}
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

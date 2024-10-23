@@ -6,13 +6,13 @@ export default class Menu {
     sugestionTree: FuckingHashTreeSearchable
     sugestionCases: Node[] = []
     productsSugestion: Product[] = []
-    constructor(public products: Product[], public sugestedValue: number) {
+    constructor(public products: Product[], public sugestedValue?: number) {
         this.sugestionTree = new FuckingHashTreeSearchable([...this.products])
     }
 
     getRangeSugested(): { max: number, min: number } {
-        const max = this.sugestedValue * 1.1
-        const min = this.sugestedValue * 0.9
+        const max = this.sugestedValue! * 1.1
+        const min = this.sugestedValue! * 0.9
         return { max, min }
     }
 

@@ -1,15 +1,16 @@
 "use client"
+import { ThemeContext } from "~/context/themeProvider"
 import Section, { SectionItem } from "./section"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 
 export type SectionsProps = {
     sections: SectionItem[],
-    bgColor: string,
     changeSection: (id: number) => void
 }
-export default function Sections({ sections, bgColor, changeSection }: SectionsProps) {
+export default function Sections({ sections, changeSection }: SectionsProps) {
     const refli = useRef<HTMLLIElement | null>(null)
     const reful = useRef<HTMLUListElement | null>(null)
+    const { theme: { bgColor, fontColor } } = useContext(ThemeContext)
 
     useEffect(() => {
         if (refli.current && reful.current) {
@@ -17,8 +18,14 @@ export default function Sections({ sections, bgColor, changeSection }: SectionsP
             reful.current?.scrollTo({ behavior: "smooth", top: 0, left: scrollLeft })
         }
     }, [refli?.current, sections])
+    
     return (
-        <ul id="list-product" ref={reful} className="list-none flex justify-center relative block rounded rounded-sm whitespace-nowrap overflow-x-visible overflow-y-hidden" style={{ backgroundColor: bgColor }} >
+        <ul
+            id="list-product"
+            ref={reful}
+            className="list-none flex justify-center relative block rounded rounded-sm whitespace-nowrap overflow-x-visible overflow-y-hidden"
+            style={{ color: fontColor, backgroundColor: bgColor }}
+        >
             {sections.map((section: SectionItem) =>
                 <li onClick={() => changeSection(section.id)} id={`li-${section.id}`} ref={section.selected ? refli : null} key={section.id} className="hover:bg-neutral-100 active:bg-neutral-200 inline-block">
                     <Section
