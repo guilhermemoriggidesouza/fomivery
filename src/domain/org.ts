@@ -8,7 +8,8 @@ export default class Org {
         public readonly fontColor: string,
         public readonly bgImage: string,
         public readonly salesman: string,
-        public readonly payDay: Date
+        public readonly payDay: Date,
+        public readonly delivery: boolean
     ) {
 
     }

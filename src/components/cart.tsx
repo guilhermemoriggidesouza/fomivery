@@ -14,7 +14,7 @@ export type CartProps = {
 export function CartModal({ title, description, children, open, saveButton, onOpenChange }: CartProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-white sm:max-w-[425px] max-h-full">
+            <DialogContent className="bg-white max-h-full">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>
@@ -24,9 +24,7 @@ export function CartModal({ title, description, children, open, saveButton, onOp
                 <div className="overflow-y-auto ">
                     {children}
                 </div>
-                <DialogFooter>
-                    {saveButton}
-                </DialogFooter>
+                {saveButton}
             </DialogContent>
         </Dialog>
     )

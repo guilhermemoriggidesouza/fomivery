@@ -14,6 +14,7 @@ import Product from "~/domain/product";
 import { CartModal } from "./cart";
 import ThemeProvider from "~/context/themeProvider";
 import Loading from "./ui/loading";
+import Order from "~/domain/order";
 
 export type MenuProp = {
     sections: SectionItem[],
@@ -44,7 +45,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId }: 
     })
     const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
 
-    const generateOrder = (data: string) => {
+    const generateOrder = (data: Order) => {
         alert("gen order" + data)
     }
     const { isPending, mutate: mutateOrder } = api.menu.createOrder.useMutation({ onSuccess: generateOrder })
@@ -165,7 +166,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId }: 
                 saveButton={<>
                     {!isPending ?
                         <Button variant="outline" onClick={(e) =>
-                            mutateOrder({ ids: boughtProducts.map(b => b.id) })
+                            mutateOrder({ products: boughtProducts.map(b => b.id), orgId, name: "Adelaide" })
                         }>
                             Fechar pedido
                         </Button> : <div className="w-100 flex justify-center"><Loading /></div>

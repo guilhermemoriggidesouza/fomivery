@@ -22,7 +22,8 @@ export default class OrgRepositoryImp implements OrgRepository {
             org.font_color,
             org.bg_image,
             org.salesman,
-            org.pay_day
+            org.pay_day,
+            org.delivery
         )
     }
 }

@@ -10,5 +10,18 @@ VALUES
         "#000",
         "Moriggi",
         DATE ('now'),
-        "fundo-cardapio.jpg"
+        "fundo-cardapio.jpg",
+        1
+    ),
+    (
+        NULL,
+        "Cardapio online",
+        "cardapio",
+        "19984544889",
+        "#FFF",
+        "#000",
+        "Moriggi",
+        DATE ('now'),
+        "fundo-cardapio.jpg",
+        0
     )

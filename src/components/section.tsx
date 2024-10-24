@@ -1,5 +1,8 @@
 "use client"
 
+import { useContext } from "react"
+import { ThemeContext } from "~/context/themeProvider"
+
 export type SectionItem = {
     id: number
     title: string,
@@ -7,6 +10,7 @@ export type SectionItem = {
 }
 
 export default function Section({ id, title, selected }: SectionItem) {
+    const { theme: { bgColor, fontColor } } = useContext(ThemeContext)
 
     return (
         <>
@@ -15,8 +19,7 @@ export default function Section({ id, title, selected }: SectionItem) {
                     width: "12px",
                     display: "inline-block",
                     height: "12px",
-                    opacity: 0.5,
-                    backgroundColor: "black",
+                    backgroundColor: fontColor,
                     textAlign: "center",
                     marginRight: "12px",
                     borderRadius: "100%"

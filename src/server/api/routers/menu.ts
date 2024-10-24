@@ -1,6 +1,8 @@
 import { z } from "zod";
+import CreatOrderUseCase from "~/application/usecases/createOrder";
 import CreatSugestionUseCase from "~/application/usecases/createSugestion";
 import GetProducts from "~/application/usecases/getProducts";
+import OrderRepositoryImp from "~/infra/repositories/order.imp";
 import ProductRepositoryImp from "~/infra/repositories/product.imp";
 
 import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
@@ -25,8 +27,19 @@ export const menuRouter = createTRPCRouter({
       return products
     }),
   createOrder: publicRoute
-    .input(z.object({ ids: z.array(z.number()) }))
+    .input(z.object({
+      products: z.array(z.number()),
+      name: z.string(),
+      orgId: z.number(),
+      telephone: z.string().optional(),
+      email: z.string().optional()
+    }))
     .mutation(async ({ ctx, input }) => {
-      return await wait(10000, "123")
+      const orderRepository = new OrderRepositoryImp();
+      const productRepository = new ProductRepositoryImp();
+
+      const createOrder = new CreatOrderUseCase(orderRepository, productRepository)
+      const order = await createOrder.execute(input)
+      return order
     }),
 });
