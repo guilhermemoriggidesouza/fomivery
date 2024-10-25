@@ -49,7 +49,6 @@ export default class OrderRepositoryImp implements orderRepository {
             return null
         }
         const orderDomainCreated = Order.toDomain(orderCreated)
-        console.log(order)
         const orderProd = this.insertProducts(order.products, orderDomainCreated.id!, orderDomainCreated.orgId)
         const [orderProductsCreated] = await db.insert(orderProdTable).values(orderProd).returning()
         if (orderProductsCreated) {

@@ -191,12 +191,12 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                 saveButton={<>
                     {!isPending ?
                         <Button variant="outline" onClick={(e) =>
-                            mutateOrder({ products: boughtProducts.map(b => b.id), orgId, name: "Adelaide" })
+                            mutateOrder({ products: boughtProducts.map(b => ({ id: b.id, qtd: b.quantity })), orgId, name: "Adelaide" })
                         }>
                             Fechar pedido
                         </Button> : <div className="w-100 flex justify-center"><Loading /></div>
                     }
-
+                    {boughtProducts.length > 0 && <p className="my-2">Total: R$ {boughtProducts.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>}
                 </>}
             >
                 <>
@@ -209,7 +209,6 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                         {item.title}
                         {"  "}
                     </p>)}
-                    {boughtProducts.length > 0 && <p className="my-2">Total: R$ {boughtProducts.map(b => (b.value*b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>}
                 </>
             </CartModal>
         </ThemeProvider>

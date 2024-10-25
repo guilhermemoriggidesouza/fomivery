@@ -4,7 +4,7 @@ import Order from "~/domain/order"
 import ProductRepository from "../repositories/product"
 
 export type inputDTO = {
-    products: number[],
+    products: { id: number, qtd: number }[],
     name: string,
     orgId: number,
     telephone?: string,
@@ -18,7 +18,14 @@ export default class CreatOrderUseCase {
     ) { }
 
     async execute(input: inputDTO): Promise<Order> {
-        const products = await this.productRepository.findByIds(input.products);
+        const products = await this.productRepository.findByIds(input.products.map(p => p.id));
+        const flatIdsQtd = input.products.reduce((previous: any, current: any) => {
+            previous[current.id] = current.qtd
+            return previous
+        }, {})
+        products.map(p => {
+            p.quantity = flatIdsQtd[p.id]
+        })
         const orderToCreate = Order.createDomain(products, input.name, input.orgId, input.telephone, input.email)
         const order = await this.orderRepository.create(orderToCreate)
         if (!order) {

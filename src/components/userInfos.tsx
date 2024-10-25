@@ -1,34 +1,30 @@
 import { Dispatch, ReactElement, SetStateAction } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 
-export type CartProps = {
+export type UserInfosProps = {
     children: ReactElement,
     title: string,
     description: string,
-    open: boolean,
     saveButton: ReactElement,
+    open: boolean,
     onOpenChange: Dispatch<SetStateAction<boolean>>
-
 }
 
-export function CartModal({ title, description, children, open, saveButton, onOpenChange }: CartProps) {
+export function UserInfosModal({ title, description, children, saveButton, open, onOpenChange }: UserInfosProps) {
     return (
-        <Dialog open={open} onOpenChange={onOpenChange} >
-            <DialogContent className="bg-white h-max-screen flex flex-col">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="bg-white sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>
                         {description}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="overflow-y-auto h-[400px]">
-                    {children}
-                </div>
+                {children}
                 <DialogFooter>
                     {saveButton}
                 </DialogFooter>
             </DialogContent>
-
         </Dialog>
     )
 }

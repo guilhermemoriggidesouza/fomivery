@@ -28,7 +28,7 @@ export const menuRouter = createTRPCRouter({
     }),
   createOrder: publicRoute
     .input(z.object({
-      products: z.array(z.number()),
+      products: z.array(z.object({ id: z.number(), qtd: z.number() })),
       name: z.string(),
       orgId: z.number(),
       telephone: z.string().optional(),
