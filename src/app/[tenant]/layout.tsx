@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 import { HydrateClient } from "~/trpc/server";
 import { TRPCReactProvider } from "~/trpc/react";
 import './global.css'
+import 'animate.css';
 
 export const metadata: Metadata = {
   title: "Create T3 App",

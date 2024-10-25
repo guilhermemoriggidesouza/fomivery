@@ -19,7 +19,7 @@ export default async function Home({ params }: { params: { tenant: string } }) {
 
   return (
     <main style={{
-      color: "#000",
+      color: dataOrg.fontColor,
       overflow: "hidden"
     }}>
       <div style={{
@@ -32,7 +32,7 @@ export default async function Home({ params }: { params: { tenant: string } }) {
         backgroundSize: "contain",
       }} />
       <div className="absolute top-0 overflow-auto h-screen m-auto w-screen">
-        <Menu orgId={dataOrg.id} products={products} sections={sections} bgColor="#FFF" fontColor="#000" />
+        <Menu orgId={dataOrg.id} products={products} sections={sections} bgColor={dataOrg.bgColor} fontColor={dataOrg.fontColor} tenant={params.tenant} />
       </div>
     </main>
   );

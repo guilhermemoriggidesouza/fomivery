@@ -13,6 +13,7 @@ export const orgTable = sqliteTable("org", {
   salesman: text("salesman").notNull(),
   pay_day: integer({ mode: 'timestamp' }).notNull(),
   delivery: integer({ mode: 'boolean' }).notNull(),
+  delivery_tax: real("delivery_tax")
 })
 
 export const orderTable = sqliteTable("order", {
@@ -51,5 +52,6 @@ export const orderProdTable = sqliteTable("order_product", {
   id: integer("id").primaryKey(),
   org_id: integer("org_id").notNull().references(() => orgTable.id),
   product_id: integer("product_id").notNull().references(() => productTable.id),
+  qtd_product: integer("qtd_product").notNull(),
   order_id: integer("order_id").notNull().references(() => orderTable.id),
 })

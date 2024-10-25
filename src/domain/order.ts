@@ -16,7 +16,7 @@ export default class Order {
     }
 
     static createDomain(products: Product[], name: string, orgId: number, telephone?: string, email?: string) {
-        const total = products.map(p => p.value).reduce((previous, current) => {
+        const total = products.map(p => p.value * p.quantity).reduce((previous, current) => {
             return previous + current
         })
         const todayDate = new Date()

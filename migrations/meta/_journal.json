@@ -36,6 +36,20 @@
       "when": 1729730995789,
       "tag": "0004_cool_mandarin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1729813936868,
+      "tag": "0005_nice_wild_child",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1729820306110,
+      "tag": "0006_kind_paper_doll",
+      "breakpoints": true
     }
   ]
 }
