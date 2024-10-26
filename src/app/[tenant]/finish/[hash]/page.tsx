@@ -3,14 +3,15 @@ import NotFound from "~/components/notFound";
 import OrderFinish from "~/components/orderFinish";
 import Product from "~/domain/product";
 
-export default async function Finish({ params }: { params: { tenant: string, orderId: string } }) {
+export default async function Finish({ params }: { params: { tenant: string, hash: string } }) {
     const dataOrg = await api.org.getOrg({ tenant: params.tenant })
     if (!dataOrg) {
         return <NotFound />
     }
-    const dataOrder = await api.order.getOrder({ orderId: Number(params.orderId) })
+    const dataOrder = await api.order.getOrder({ hash: params.hash })
     dataOrder.products = dataOrder.products.map((p: Product) => ({ ...p }))
     const order = { ...dataOrder }
+    const org = { ...dataOrg }
     return (
         <main style={{
             color: dataOrg.fontColor,
@@ -26,7 +27,7 @@ export default async function Finish({ params }: { params: { tenant: string, ord
                 backgroundSize: "contain",
             }} />
             <div className="absolute top-0 overflow-auto h-screen m-auto w-screen">
-                <OrderFinish bgColor={dataOrg.bgColor} fontColor={dataOrg.fontColor} order={order} />
+                <OrderFinish bgColor={dataOrg.bgColor} fontColor={dataOrg.fontColor} order={order} org={org} />
             </div>
         </main>
     );

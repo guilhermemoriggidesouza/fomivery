@@ -8,14 +8,48 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { UserInfosModal } from "./userInfos"
 import { useState } from "react"
+import Product from "~/domain/product"
+import Org from "~/domain/org"
 
 export type OrderFinishProps = {
     order: Order
     bgColor: string,
-    fontColor: string
+    fontColor: string,
+    org: Org
 }
-export default function OrderFinish({ order, bgColor, fontColor }: OrderFinishProps) {
+export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFinishProps) {
     const [openUserInfos, setOpenUserInfos] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [number, setNumber] = useState("");
+    const [address, setAddress] = useState("");
+
+    const fetchCep = async (cep: string) => {
+        const addressInfo = await fetch(`https://viacep.com.br/ws/${cep}/json/`).then(res => res.json())
+        setAddress(`${addressInfo.logradouro}, ${addressInfo.bairro}, ${addressInfo.localidade}, ${addressInfo.uf}`)
+    }
+
+    const handleZipCode = (event: any) => {
+        let input = event.target
+        input.value = zipCodeMask(input.value)
+    }
+
+    const zipCodeMask = (value: string) => {
+        if (!value) return ""
+        value = value.replace(/\D/g, '')
+        value = value.replace(/(\d{5})(\d)/, '$1-$2')
+        return value
+    }
+
+    const handlerSendWhats = () => {
+        const listProducts = order.products.reduce((previous: string, current: Product) => {
+            previous += `- *${current.quantity}x ${current.title}*%0A`
+            return previous
+        }, "")
+        const text = `PEDIDO:[${order.id}]%0AOlá meu nome é *${name}*, gostaria de pedir:%0A${listProducts}Para entregar no endereço:%0A*${address}, ${number}*%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
+        window.open(`https://api.whatsapp.com/send?phone=${org.telephone}&text=${text}`, '_blank')!.focus();
+
+    }
 
     return (
         <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
@@ -43,24 +77,76 @@ export default function OrderFinish({ order, bgColor, fontColor }: OrderFinishPr
             <UserInfosModal
                 open={openUserInfos}
                 onOpenChange={setOpenUserInfos}
-                description="Insira um valor que iremos te sugerir opções aproximadas desse valor"
-                title="Até quanto você pretende gastar?"
+                description="Quase lá, informe seus dados para montarmos seu pedido"
+                title="Informações pessoais"
                 saveButton={<>
-                    <Button variant="outline" onClick={(e) => { }}>
-                        Configurar Endereço
+                    <Button variant="outline" onClick={handlerSendWhats}>
+                        Enviar WhatsApp
                     </Button>
                 </>}
             >
                 <>
-                    <Label htmlFor="sugestionValue" className="text-left">
-                        Valor em Reais:
+                    <Label htmlFor="name" className="text-left">
+                        Nome Completo:
                     </Label>
                     <Input
-                        type="number"
-                        placeholder="20"
-                        onChange={(e) => { }}
-                        id="sugestionValue"
+                        type="text"
+                        placeholder="Seu Nome"
+                        onChange={(e) => {
+                            setName(e.target.value)
+                        }}
+                        id="name"
                     />
+                    {/* <Label htmlFor="email" className="text-left">
+                        Email:
+                    </Label>
+                    <Input
+                        type="text"
+                        placeholder="email@host.com"
+                        onChange={(e) => {
+                            setEmail(e.target.value)
+                        }}
+                        id="email"
+                    /> */}
+                    <Label htmlFor="cep" className="text-left">
+                        Cep (Opcional para rápido preenchimento):
+                    </Label>
+                    <Input
+                        type="text"
+                        placeholder="00000-000"
+                        onKeyUp={handleZipCode}
+                        maxLength={9}
+                        onChange={(e: any) => {
+                            if (e.target.value.length == 9) {
+                                fetchCep(e.target.value)
+                            }
+                        }}
+                        id="cep"
+                    />
+                    <Label htmlFor="address" className="text-left">
+                        Endereço:
+                    </Label>
+                    <Input
+                        type="text"
+                        value={address}
+                        placeholder="Rua, Bairro, Cidade"
+                        onChange={(e) => {
+                            setAddress(e.target.value)
+                        }}
+                        id="address"
+                    />
+                    <Label htmlFor="addessMore" className="text-left">
+                        Numero e Complemento:
+                    </Label>
+                    <Input
+                        type="text"
+                        placeholder="Numero e Complemento"
+                        onChange={(e) => {
+                            setNumber(e.target.value)
+                        }}
+                        id="addessMore"
+                    />
+                    <i>O valor do pedido deve ser pago na entrega</i>
                 </>
             </UserInfosModal>
         </ThemeProvider>

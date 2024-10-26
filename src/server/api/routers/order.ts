@@ -6,7 +6,7 @@ import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
 
 export const orderRouter = createTRPCRouter({
     getOrder: publicRoute
-        .input(z.object({ orderId: z.number() }))
+        .input(z.object({ hash: z.string() }))
         .query(async ({ ctx, input }) => {
             const orderRepository = new OrderRepositoryImp();
             const getOrder = new GetOrder(orderRepository)

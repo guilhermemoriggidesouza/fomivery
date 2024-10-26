@@ -1,11 +1,12 @@
 import Product from "./product";
-
+import { v4 } from "uuid";
 export default class Order {
 
     private constructor(
         public readonly total: number,
         public readonly createdAt: Date,
         public readonly name: string,
+        public readonly hash: string,
         public readonly orgId: number,
         public products: Product[],
         public readonly email?: string | null,
@@ -20,7 +21,8 @@ export default class Order {
             return previous + current
         })
         const todayDate = new Date()
-        return new Order(total, todayDate, name, orgId, products, telephone, email)
+        const hash = v4()
+        return new Order(total, todayDate, name, hash, orgId, products, telephone, email)
     }
 
     static toDomain(orderDb: {
@@ -28,13 +30,14 @@ export default class Order {
         total: number,
         created_at: Date,
         name: string,
+        hash: string,
         org_id: number,
         email?: string | null,
         telephone?: string | null,
         finish_at?: Date | null,
     }) {
         const products: Product[] = []
-        return new Order(orderDb.total, orderDb.created_at, orderDb.name, orderDb.org_id, products, orderDb.email, orderDb.telephone, orderDb.finish_at, orderDb.id)
+        return new Order(orderDb.total, orderDb.created_at, orderDb.name, orderDb.hash, orderDb.org_id, products, orderDb.email, orderDb.telephone, orderDb.finish_at, orderDb.id)
     }
 
 }

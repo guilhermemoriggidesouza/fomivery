@@ -19,12 +19,10 @@ export const orgTable = sqliteTable("org", {
 export const orderTable = sqliteTable("order", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
+  hash: text("hash").notNull(),
   total: real("total").notNull(),
-
-  //caso tenha delivery
   telephone: text("telephone"),
   email: text("email"),
-
   created_at: integer({ mode: 'timestamp' })
     .notNull()
     .default(sql`(current_timestamp)`),

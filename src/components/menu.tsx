@@ -50,7 +50,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
 
     const generateOrder = (data: Order) => {
-        router.push(`/${tenant}/finish/${data.id}`)
+        router.push(`/${tenant}/finish/${data.hash}`)
     }
     const { isPending, mutate: mutateOrder } = api.menu.createOrder.useMutation({ onSuccess: generateOrder })
     const changeSection = (id: number) => {

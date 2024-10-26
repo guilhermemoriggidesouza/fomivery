@@ -21,7 +21,7 @@ export function SugestionModal({ title, description, children, saveButton, open,
                     </DialogDescription>
                 </DialogHeader>
                 {children}
-                <DialogFooter>
+                <DialogFooter className="mb-8">
                     {saveButton}
                 </DialogFooter>
             </DialogContent>

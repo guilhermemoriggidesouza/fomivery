@@ -10,11 +10,11 @@ export default class OrderRepositoryImp implements orderRepository {
         return products.map(p => ({ product_id: p.id, order_id: orderId, org_id: orgId, qtd_product: p.quantity! }))
     }
 
-    async findById(orderId: number): Promise<Order | null> {
+    async findByHash(orderHash: string): Promise<Order | null> {
         const orderRecovery = await db.select().from(orderTable)
             .leftJoin(orderProdTable, eq(orderProdTable.order_id, orderTable.id))
             .leftJoin(productTable, eq(productTable.id, orderProdTable.product_id))
-            .where(eq(orderTable.id, orderId))
+            .where(eq(orderTable.hash, orderHash))
             .all()
         const [order] = [...orderRecovery]
         if (!order) {
@@ -39,6 +39,7 @@ export default class OrderRepositoryImp implements orderRepository {
     async create(order: Order): Promise<Order | null> {
         const [orderCreated] = await db.insert(orderTable).values({
             name: order.name,
+            hash: order.hash,
             total: order.total,
             telephone: order.telephone,
             email: order.email,

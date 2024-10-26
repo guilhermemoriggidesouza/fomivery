@@ -1,0 +1,1 @@
+ALTER TABLE `order` ADD `hash` text NOT NULL;

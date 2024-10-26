@@ -10,7 +10,7 @@ INSERT INTO
 VALUES
     (
         1,
-        "Hambúrguer Clássico Muito pica selóko",
+        "Hambúrguer Clássico Muito bom sabor nunca antes visto",
         "Hambúrguer de carne com queijo, alface e tomate.",
         "15.00",
         "https://example.com/images/hamburguer_classico.jpg",
