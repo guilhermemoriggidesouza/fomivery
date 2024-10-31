@@ -6,6 +6,11 @@ import { db } from "~/server/db";
 import { orderProdTable, orderTable, productTable } from "~/server/db/schema";
 
 export default class OrderRepositoryImp implements orderRepository {
+    async update(order: Order) {
+        await db.update(orderTable)
+            .set({ name: order.name, email: order.email, telephone: order.telephone, finish_at: order.finishAt })
+            .where(eq(orderTable.id, order.id!))
+    };
     insertProducts(products: Product[], orderId: number, orgId: number): { product_id: number, order_id: number, org_id: number, qtd_product: number }[] {
         return products.map(p => ({ product_id: p.id, order_id: orderId, org_id: orgId, qtd_product: p.quantity! }))
     }

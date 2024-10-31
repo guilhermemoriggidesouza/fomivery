@@ -2,6 +2,7 @@ import { api } from "~/trpc/server";
 import NotFound from "~/components/notFound";
 import OrderFinish from "~/components/orderFinish";
 import Product from "~/domain/product";
+import { OrderType } from "~/domain/order";
 
 export default async function Finish({ params }: { params: { tenant: string, hash: string } }) {
     const dataOrg = await api.org.getOrg({ tenant: params.tenant })
@@ -10,7 +11,7 @@ export default async function Finish({ params }: { params: { tenant: string, has
     }
     const dataOrder = await api.order.getOrder({ hash: params.hash })
     dataOrder.products = dataOrder.products.map((p: Product) => ({ ...p }))
-    const order = { ...dataOrder }
+    const order = { ...dataOrder } as OrderType
     const org = { ...dataOrg }
     return (
         <main style={{
@@ -27,7 +28,7 @@ export default async function Finish({ params }: { params: { tenant: string, has
                 backgroundSize: "contain",
             }} />
             <div className="absolute top-0 overflow-auto h-screen m-auto w-screen">
-                <OrderFinish bgColor={dataOrg.bgColor} fontColor={dataOrg.fontColor} order={order} org={org} />
+                <OrderFinish bgColor={dataOrg.bgColor} fontColor={dataOrg.fontColor} orderFirst={order} org={org} />
             </div>
         </main>
     );

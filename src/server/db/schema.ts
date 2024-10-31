@@ -18,13 +18,13 @@ export const orgTable = sqliteTable("org", {
 
 export const orderTable = sqliteTable("order", {
   id: integer("id").primaryKey(),
-  name: text("name").notNull(),
   hash: text("hash").notNull(),
   total: real("total").notNull(),
   telephone: text("telephone"),
   email: text("email"),
+  name: text("name"),
   created_at: integer({ mode: 'timestamp' })
-    .notNull()
+  .notNull()
     .default(sql`(current_timestamp)`),
   finish_at: integer({ mode: 'timestamp' }),
   org_id: integer("org_id").notNull().references(() => orgTable.id)

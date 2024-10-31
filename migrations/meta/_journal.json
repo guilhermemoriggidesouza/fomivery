@@ -57,6 +57,13 @@
       "when": 1729953866718,
       "tag": "0007_short_jazinda",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1729971109798,
+      "tag": "0008_smiling_captain_stacy",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import ThemeProvider from "~/context/themeProvider"
-import Order from "~/domain/order"
+import Order, { OrderType } from "~/domain/order"
 import Back from "./ui/back"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
@@ -10,17 +10,20 @@ import { UserInfosModal } from "./userInfos"
 import { useState } from "react"
 import Product from "~/domain/product"
 import Org from "~/domain/org"
+import { api } from "~/trpc/react"
 
 export type OrderFinishProps = {
-    order: Order
+    orderFirst: OrderType
     bgColor: string,
     fontColor: string,
     org: Org
 }
-export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFinishProps) {
+export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: OrderFinishProps) {
     const [openUserInfos, setOpenUserInfos] = useState(false);
     const [name, setName] = useState("");
+    const [order, setOrder] = useState(orderFirst);
     const [email, setEmail] = useState("");
+    const [telephone, setTelephone] = useState("");
     const [number, setNumber] = useState("");
     const [address, setAddress] = useState("");
 
@@ -32,6 +35,17 @@ export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFin
     const handleZipCode = (event: any) => {
         let input = event.target
         input.value = zipCodeMask(input.value)
+    }
+    const handleTelephone = (event: any) => {
+        let input = event.target
+        input.value = telephoneMask(input.value)
+    }
+
+    const telephoneMask = (value: string) => {
+        if (!value) return ""
+        value = value.replace(/\D/g, '')
+        value = value.replace(/(\d{2})(\d{5})(\d)/, '($1) $2-$3')
+        return value
     }
 
     const zipCodeMask = (value: string) => {
@@ -48,8 +62,13 @@ export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFin
         }, "")
         const text = `PEDIDO:[${order.id}]%0AOlá meu nome é *${name}*, gostaria de pedir:%0A${listProducts}Para entregar no endereço:%0A*${address}, ${number}*%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
         window.open(`https://api.whatsapp.com/send?phone=${org.telephone}&text=${text}`, '_blank')!.focus();
-
+        mutateOrder({ name, email, hash: order.hash, telephone })
     }
+
+    const finishOrder = (data: Order) => {
+        setOrder({ ...data } as OrderType)
+    }
+    const { isPending, mutate: mutateOrder } = api.order.finishOrder.useMutation({ onSuccess: finishOrder })
 
     return (
         <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
@@ -69,11 +88,20 @@ export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFin
                         {"  "}
                     </p>)}
                 </div>
-                <p className="mt-4">Total: R$ {order.products.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>
-                <button onClick={() => { setOpenUserInfos(true) }} className="bg-blue-500 mb-4 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
-                    <p>Enviar para Whatsapp</p>
-                </button>
-            </div>
+                <p className={`${order.finishAt && "mt-4"}`}>Total: R$ {order.products.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>
+                {order.finishAt ?
+                    (<>
+                        <div className="flex text-lg">
+                            <p className="w-full text-center"><b>Seu pedido foi feito com sucesso!</b></p>
+                        </div>
+                        <p className="w-full text-center"><i>caso tenha uma duvida, basta entrar em contato no número: {telephoneMask(org.telephone)}</i></p>
+                    </>)
+                    :
+                    (<button onClick={() => { setOpenUserInfos(true) }} className="bg-blue-500 mb-4 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
+                        <p>Enviar para Whatsapp</p>
+                    </button>)
+                }
+            </div >
             <UserInfosModal
                 open={openUserInfos}
                 onOpenChange={setOpenUserInfos}
@@ -96,6 +124,19 @@ export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFin
                             setName(e.target.value)
                         }}
                         id="name"
+                    />
+                    <Label htmlFor="telephone" className="text-left">
+                        Telefone:
+                    </Label>
+                    <Input
+                        type="text"
+                        placeholder="(00) 00000-0000"
+                        onChange={(e) => {
+                            setTelephone(e.target.value)
+                        }}
+                        onKeyUp={handleTelephone}
+                        maxLength={15}
+                        id="telephone"
                     />
                     {/* <Label htmlFor="email" className="text-left">
                         Email:
@@ -149,6 +190,6 @@ export default function OrderFinish({ order, bgColor, fontColor, org }: OrderFin
                     <i>O valor do pedido deve ser pago na entrega</i>
                 </>
             </UserInfosModal>
-        </ThemeProvider>
+        </ThemeProvider >
     )
 }

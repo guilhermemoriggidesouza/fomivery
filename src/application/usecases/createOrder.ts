@@ -5,8 +5,8 @@ import ProductRepository from "../repositories/product"
 
 export type inputDTO = {
     products: { id: number, qtd: number }[],
-    name: string,
     orgId: number,
+    name?: string,
     telephone?: string,
     email?: string
 }
@@ -26,7 +26,7 @@ export default class CreatOrderUseCase {
         products.map(p => {
             p.quantity = flatIdsQtd[p.id]
         })
-        const orderToCreate = Order.createDomain(products, input.name, input.orgId, input.telephone, input.email)
+        const orderToCreate = Order.createDomain(products, input.orgId, input.telephone, input.email, input.name)
         const order = await this.orderRepository.create(orderToCreate)
         if (!order) {
             throw new Error("Cannot create order")
