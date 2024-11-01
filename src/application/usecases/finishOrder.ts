@@ -5,6 +5,7 @@ export type inputDTO = {
     name: string,
     telephone: string,
     email?: string,
+    obs?: string,
     hash: string
 }
 
@@ -18,7 +19,7 @@ export default class FinishOrderUseCase {
         if(!order){
             throw new Error("Error on get order to update")
         }
-        order.finish(input.name, input.telephone, input.email)
+        order.finish(input.name, input.telephone, input.email, input.obs)
         let newOrder = await this.orderRepository.update(order)
         if (!order) {
             throw new Error("Error on request order")

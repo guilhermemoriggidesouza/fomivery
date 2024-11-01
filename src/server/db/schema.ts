@@ -23,6 +23,7 @@ export const orderTable = sqliteTable("order", {
   telephone: text("telephone"),
   email: text("email"),
   name: text("name"),
+  obs: text("obs"),
   created_at: integer({ mode: 'timestamp' })
   .notNull()
     .default(sql`(current_timestamp)`),

@@ -20,7 +20,9 @@ export function UserInfosModal({ title, description, children, saveButton, open,
                         {description}
                     </DialogDescription>
                 </DialogHeader>
-                {children}
+                <div className="overflow-y-auto h-[400px] px-2">
+                    {children}
+                </div>
                 <DialogFooter className="mb-8">
                     {saveButton}
                 </DialogFooter>

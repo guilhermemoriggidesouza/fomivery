@@ -11,6 +11,7 @@ import { useState } from "react"
 import Product from "~/domain/product"
 import Org from "~/domain/org"
 import { api } from "~/trpc/react"
+import { Textarea } from "./ui/textarea"
 
 export type OrderFinishProps = {
     orderFirst: OrderType
@@ -23,6 +24,7 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
     const [name, setName] = useState("");
     const [order, setOrder] = useState(orderFirst);
     const [email, setEmail] = useState("");
+    const [obs, setObs] = useState("");
     const [telephone, setTelephone] = useState("");
     const [number, setNumber] = useState("");
     const [address, setAddress] = useState("");
@@ -56,13 +58,17 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
     }
 
     const handlerSendWhats = () => {
+        if(!name || !number || !address) {
+            alert("Prencha todas as informações obrigatórias")
+            return
+        }
         const listProducts = order.products.reduce((previous: string, current: Product) => {
             previous += `- *${current.quantity}x ${current.title}*%0A`
             return previous
         }, "")
-        const text = `PEDIDO:[${order.id}]%0AOlá meu nome é *${name}*, gostaria de pedir:%0A${listProducts}Para entregar no endereço:%0A*${address}, ${number}*%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
+        const text = `PEDIDO:[${order.id}]%0AOlá meu nome é *${name}*, gostaria de pedir:%0A${listProducts}Para entregar no endereço:%0A*${address}, ${number}*%0A${obs}%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
         window.open(`https://api.whatsapp.com/send?phone=${org.telephone}&text=${text}`, '_blank')!.focus();
-        mutateOrder({ name, email, hash: order.hash, telephone })
+        mutateOrder({ name, email, hash: order.hash, telephone, obs })
     }
 
     const finishOrder = (data: Order) => {
@@ -186,6 +192,17 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
                             setNumber(e.target.value)
                         }}
                         id="addessMore"
+                    />
+                    
+                    <Label htmlFor="obs" className="text-left">
+                        Observações:
+                    </Label>
+                    <Textarea
+                        placeholder="Adicione sua observação"
+                        onChange={(e) => {
+                            setObs(e.target.value)
+                        }}
+                        id="obs"
                     />
                     <i>O valor do pedido deve ser pago na entrega</i>
                 </>

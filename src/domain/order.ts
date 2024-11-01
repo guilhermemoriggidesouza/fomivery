@@ -8,6 +8,7 @@ export type OrderType = {
     orgId: number,
     products: Product[],
     email?: string | null,
+    obs?: string,
     telephone?: string | null,
     finishAt?: Date | null,
     id?: number | null,
@@ -23,16 +24,19 @@ export default class Order {
         public email?: string | null,
         public telephone?: string | null,
         public finishAt?: Date | null,
+        public obs?: string | null,
         public readonly id?: number | null,
     ) {
     }
 
-    finish(name: string, telephone: string, email?: string) {
+    finish(name: string, telephone: string, email?: string, obs?: string) {
         this.name = name
         this.telephone = telephone
         this.email = email
         this.finishAt = new Date()
+        this.obs = obs
     }
+
     static createDomain(products: Product[], orgId: number, telephone?: string, email?: string, name?: string,) {
         const total = products.map(p => p.value * p.quantity).reduce((previous, current) => {
             return previous + current
@@ -51,10 +55,11 @@ export default class Order {
         name?: string | null,
         email?: string | null,
         telephone?: string | null,
+        obs?: string | null
         finish_at?: Date | null,
     }) {
         const products: Product[] = []
-        return new Order(orderDb.total, orderDb.created_at, orderDb.hash, orderDb.org_id, products, orderDb.name, orderDb.email, orderDb.telephone, orderDb.finish_at, orderDb.id)
+        return new Order(orderDb.total, orderDb.created_at, orderDb.hash, orderDb.org_id, products, orderDb.name, orderDb.email, orderDb.telephone, orderDb.finish_at, orderDb.obs, orderDb.id)
     }
 
 }
