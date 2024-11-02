@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Products from "./products";
 import { SectionItem } from "./section";
 import Sections from "./sections";
@@ -48,6 +48,18 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
         refetchIntervalInBackground: false,
     })
     const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
+    const setProducts = async () => {
+        const productsJson = window.localStorage.getItem('bougthProducts')
+        const productsJsonTotal = window.localStorage.getItem('bougthProductsTotal')
+        if (productsJson) {
+            const bougthProducts = JSON.parse(productsJson)
+            setQtdItens(Number(productsJsonTotal))
+            setBoughtProducts(bougthProducts)
+        }
+    }
+    useEffect(() => {
+        setProducts()
+    }, [])
 
     const generateOrder = (data: Order) => {
         router.push(`/${tenant}/finish/${data.hash}`)
@@ -109,8 +121,12 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
             product.quantity += 1
             newArray.push(product)
         }
-        setQtdItens((value) => value + 1)
+        setQtdItens((value) => {
+            window.localStorage.setItem('bougthProductsTotal', (value + 1).toString())
+            return value + 1
+        })
         setBoughtProducts(newArray)
+        window.localStorage.setItem('bougthProducts', JSON.stringify(boughtProducts))
     }
 
     const handlerRemoveProduct = (product: Product) => {
@@ -118,7 +134,10 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
         const newArrayProducts: Product[] = newArray.map(item => {
             if (item && item.id == product.id && item.quantity > 0) {
                 item.quantity -= 1
-                setQtdItens((value) => value - 1)
+                setQtdItens((value) => {
+                    window.localStorage.setItem('bougthProductsTotal', (value - 1).toString())
+                    return value - 1
+                })
             }
             if (!item || item.quantity == 0) {
                 return null
@@ -126,6 +145,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
             return item
         }).filter(e => e != null)
         setBoughtProducts(newArrayProducts)
+        window.localStorage.setItem('bougthProducts', JSON.stringify(boughtProducts))
     }
 
     return (
@@ -190,11 +210,22 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                 title="Aqui está seus itens"
                 saveButton={<>
                     {!isPending ?
-                        <Button variant="outline" onClick={(e) =>
-                            mutateOrder({ products: boughtProducts.map(b => ({ id: b.id, qtd: b.quantity })), orgId, name: "Adelaide" })
-                        }>
-                            Fechar pedido
-                        </Button> : <div className="w-100 flex justify-center"><Loading /></div>
+                        <>
+                            <Button className="my-2" variant="outline" onClick={(e) => {
+                                setBoughtProducts([])
+                                setQtdItens(0)
+                                window.localStorage.clear()
+                                setOpenCart(false)
+                            }}>
+                                Limpar carrinho
+                            </Button>
+                            <Button variant="outline" onClick={(e) =>
+                                mutateOrder({ products: boughtProducts.map(b => ({ id: b.id, qtd: b.quantity })), orgId, name: "Adelaide" })
+                            }>
+                                Fechar pedido
+                            </Button>
+                        </>
+                        : <div className="w-100 flex justify-center"><Loading /></div>
                     }
                     {boughtProducts.length > 0 && <p className="my-2">Total: R$ {boughtProducts.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>}
                 </>}
@@ -210,8 +241,8 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                         {"  "}
                     </p>)}
                 </>
-            </CartModal>
-        </ThemeProvider>
+            </CartModal >
+        </ThemeProvider >
     )
 
 }

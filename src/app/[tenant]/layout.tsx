@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en" style={{ overflow: "hidden" }}>
       <head>
         <link rel="manifest" href={`${base}/manifest.json`} />
-        <script src={`${base}/pwaStart.json`} />
+        <script src={`${base}/pwaStart.js`} />
       </head>
       <body className={GeistSans.className} style={{ overflow: "hidden" }}>
         <TRPCReactProvider>

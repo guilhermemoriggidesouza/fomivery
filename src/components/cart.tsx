@@ -21,7 +21,7 @@ export function CartModal({ title, description, children, open, saveButton, onOp
                         {description}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="overflow-y-auto h-[400px]">
+                <div className="overflow-y-auto h-max-[400px]">
                     {children}
                 </div>
                 <DialogFooter className="mb-8">

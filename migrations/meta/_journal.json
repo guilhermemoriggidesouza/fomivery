@@ -71,6 +71,13 @@
       "when": 1730419317836,
       "tag": "0009_lumpy_ben_urich",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1730572554753,
+      "tag": "0010_gray_madripoor",
+      "breakpoints": true
     }
   ]
 }

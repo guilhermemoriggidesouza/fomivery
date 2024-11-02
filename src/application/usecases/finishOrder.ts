@@ -4,7 +4,11 @@ import Order from "~/domain/order"
 export type inputDTO = {
     name: string,
     telephone: string,
+    paymentType: string,
+    changePayment?: number,
+    total: number,
     email?: string,
+    delivery?: boolean,
     obs?: string,
     hash: string
 }
@@ -16,10 +20,10 @@ export default class FinishOrderUseCase {
 
     async execute(input: inputDTO): Promise<Order> {
         const order = await this.orderRepository.findByHash(input.hash)
-        if(!order){
+        if (!order) {
             throw new Error("Error on get order to update")
         }
-        order.finish(input.name, input.telephone, input.email, input.obs)
+        order.finish(input.name, input.paymentType, input.telephone, input.total, input.email, input.obs, input.changePayment, input.delivery)
         let newOrder = await this.orderRepository.update(order)
         if (!order) {
             throw new Error("Error on request order")

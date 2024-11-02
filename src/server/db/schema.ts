@@ -12,7 +12,6 @@ export const orgTable = sqliteTable("org", {
   bg_image: text("bg_image").notNull(),
   salesman: text("salesman").notNull(),
   pay_day: integer({ mode: 'timestamp' }).notNull(),
-  delivery: integer({ mode: 'boolean' }).notNull(),
   delivery_tax: real("delivery_tax")
 })
 
@@ -20,12 +19,15 @@ export const orderTable = sqliteTable("order", {
   id: integer("id").primaryKey(),
   hash: text("hash").notNull(),
   total: real("total").notNull(),
+  change_payment: real("change_payment"),
+  payment_type: text("payment_type"),
+  delivery: integer({ mode: 'boolean' }).notNull().default(true),
   telephone: text("telephone"),
   email: text("email"),
   name: text("name"),
   obs: text("obs"),
   created_at: integer({ mode: 'timestamp' })
-  .notNull()
+    .notNull()
     .default(sql`(current_timestamp)`),
   finish_at: integer({ mode: 'timestamp' }),
   org_id: integer("org_id").notNull().references(() => orgTable.id)

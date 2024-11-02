@@ -15,7 +15,17 @@ export const orderRouter = createTRPCRouter({
             return order
         }),
     finishOrder: publicRoute
-        .input(z.object({ name: z.string(), telephone: z.string(), email: z.string().optional(), hash: z.string(), obs: z.string().optional() }))
+        .input(z.object({
+            name: z.string(),
+            telephone: z.string(),
+            email: z.string().optional(),
+            hash: z.string(),
+            obs: z.string().optional(),
+            paymentType: z.string(),
+            total: z.number(),
+            changePayment: z.number().optional(),
+            delivery: z.boolean().default(true)
+        }))
         .mutation(async ({ ctx, input }) => {
             const orderRepository = new OrderRepositoryImp();
             const finishOrder = new FinishOrderUseCase(orderRepository)

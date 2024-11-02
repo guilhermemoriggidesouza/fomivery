@@ -8,12 +8,23 @@ import { orderProdTable, orderTable, productTable } from "~/server/db/schema";
 export default class OrderRepositoryImp implements orderRepository {
     async update(order: Order) {
         await db.update(orderTable)
-            .set({ name: order.name, email: order.email, telephone: order.telephone, finish_at: order.finishAt, obs: order.obs })
+            .set({
+                name: order.name,
+                email: order.email,
+                telephone: order.telephone,
+                finish_at: order.finishAt,
+                obs: order.obs,
+                change_payment: order.changePayment,
+                payment_type: order.paymentType,
+                delivery: order.delivery,
+                total: order.total
+            })
             .where(eq(orderTable.id, order.id!))
     };
     insertProducts(products: Product[], orderId: number, orgId: number): { product_id: number, order_id: number, org_id: number, qtd_product: number }[] {
         return products.map(p => ({ product_id: p.id, order_id: orderId, org_id: orgId, qtd_product: p.quantity! }))
     }
+
     async findByHash(orderHash: string): Promise<Order | null> {
         const orderRecovery = await db.select().from(orderTable)
             .leftJoin(orderProdTable, eq(orderProdTable.order_id, orderTable.id))

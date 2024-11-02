@@ -9,7 +9,7 @@ export default class Org {
         public readonly bgImage: string,
         public readonly salesman: string,
         public readonly payDay: Date,
-        public readonly delivery: boolean
+        public readonly deliveryTax?: number | null,
     ) {
 
     }
