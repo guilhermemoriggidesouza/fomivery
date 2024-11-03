@@ -39,11 +39,11 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
     }
 
     const handleZipCode = (event: any) => {
-        let input = event.target
+        const input = event.target
         input.value = zipCodeMask(input.value)
     }
     const handleTelephone = (event: any) => {
-        let input = event.target
+        const input = event.target
         input.value = telephoneMask(input.value)
     }
 
@@ -108,7 +108,7 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
 
                 <hr />
                 <div className="overflow-y-auto max-h-[70%] mx-4">
-                    {order.products.map((item, i) => <p className="text-md my-4 truncate text-left">
+                    {order.products.map((item, i) => <p key={i} className="text-md my-4 truncate text-left">
                         {item.quantity}x
                         [R$ {(item.value).toFixed(2).replace(".", ",")}]
                         {"  "}

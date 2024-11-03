@@ -6,9 +6,7 @@ import OrderRepositoryImp from "~/infra/repositories/order.imp";
 import ProductRepositoryImp from "~/infra/repositories/product.imp";
 
 import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
-function wait(ms: any, value: any) {
-  return new Promise(resolve => setTimeout(resolve, ms, value));
-}
+
 export const menuRouter = createTRPCRouter({
   createSugestion: publicRoute
     .input(z.object({ sugestionValue: z.number(), sectionId: z.number(), orgId: z.number() }))

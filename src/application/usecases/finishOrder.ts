@@ -24,7 +24,7 @@ export default class FinishOrderUseCase {
             throw new Error("Error on get order to update")
         }
         order.finish(input.name, input.paymentType, input.telephone, input.total, input.email, input.obs, input.changePayment, input.delivery)
-        let newOrder = await this.orderRepository.update(order)
+        await this.orderRepository.update(order)
         if (!order) {
             throw new Error("Error on request order")
         }
