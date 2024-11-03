@@ -211,7 +211,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                 saveButton={<>
                     {!isPending ?
                         <>
-                            <Button className="my-2" variant="outline" onClick={(e) => {
+                            <Button className="mb-2" variant="outline" onClick={(e) => {
                                 setBoughtProducts([])
                                 setQtdItens(0)
                                 window.localStorage.clear()
