@@ -36,7 +36,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const [sugested, setSugested] = useState<boolean>(false);
     const [sugestionValue, setSugestionValue] = useState<number | undefined>();
     const [boughtProducts, setBoughtProducts] = useState<Product[]>([])
-    const { data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
+    const { isFetching: isPendingProducts, data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
         sectionId: section!.id, orgId
     }, {
         initialData: products,
@@ -152,13 +152,14 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
         <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
             <Sections sections={sectionList} changeSection={changeSection} />
             <div style={{ margin: "auto", maxWidth: "600px" }}>
-                {(sugested && dataSugested && dataSugested.products) ?
-                    <>
-                        <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
-                        <Products products={dataSugested.products} onAddProduct={handlerAddProduct} />
-                    </>
-                    :
-                    <Products products={dataGetProducts} onAddProduct={handlerAddProduct} />
+                {isPendingProducts ? <div className="w-100 mt-5 flex justify-center"><Loading fontColor={fontColor} bgColor={bgColor} /></div> :
+                    (sugested && dataSugested && dataSugested.products) ?
+                        <>
+                            <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
+                            <Products products={dataSugested.products} onAddProduct={handlerAddProduct} />
+                        </>
+                        :
+                        <Products products={dataGetProducts} onAddProduct={handlerAddProduct} />
                 }
             </div>
 

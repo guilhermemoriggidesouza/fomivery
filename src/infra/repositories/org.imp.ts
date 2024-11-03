@@ -23,7 +23,10 @@ export default class OrgRepositoryImp implements OrgRepository {
             org.bg_image,
             org.salesman,
             org.pay_day,
+            org.icon,
+            org.address,
             org.delivery_tax,
+        
         )
     }
 }

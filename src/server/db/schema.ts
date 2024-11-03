@@ -5,6 +5,8 @@ export const orgTable = sqliteTable("org", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
   tenant: text("tenant").notNull(),
+  address: text("address"),
+  icon: text("icon"),
   telephone: text("telephone").notNull(),
   email: text("email").notNull(),
   bg_color: text("bg_color").notNull().default("#FFF"),

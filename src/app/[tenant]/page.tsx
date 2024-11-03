@@ -3,9 +3,13 @@ import { api } from "~/trpc/server";
 import Menu from "~/components/menu";
 import Section from "~/domain/section";
 import NotFound from "~/components/notFound";
+import HeaderOrg from "~/components/headerOrg";
+import { headers } from "next/headers";
 
 export default async function Home({ params }: { params: { tenant: string } }) {
   const dataOrg = await api.org.getOrg({ tenant: params.tenant })
+  const base = `${headers().get('x-forwarded-proto')}://${headers().get('host')}`;
+
   if (!dataOrg) {
     return <NotFound />
   }
@@ -32,6 +36,7 @@ export default async function Home({ params }: { params: { tenant: string } }) {
         backgroundSize: "contain",
       }} />
       <div className="absolute top-0 overflow-auto h-screen m-auto w-screen">
+        <HeaderOrg org={dataOrg} url={base} />
         <Menu orgId={dataOrg.id} products={products} sections={sections} bgColor={dataOrg.bgColor} fontColor={dataOrg.fontColor} tenant={params.tenant} />
       </div>
     </main>
