@@ -30,10 +30,11 @@ export default async function Home({ params }: { params: { tenant: string } }) {
         height: "100vh",
         width: "100vw",
         opacity: 0.8,
-        backgroundImage: "url(fundo-cardapio.jpg)",
+        backgroundImage: dataOrg.bgImage != null ? `url(${dataOrg.bgImage})` : undefined,
+        backgroundColor: dataOrg.bgColorScreen || undefined,
         backgroundRepeat: "repeat",
         backgroundAttachment: "fixed",
-        backgroundSize: "contain",
+        backgroundSize: "cover",
       }} />
       <div className="absolute top-0 overflow-auto h-screen m-auto w-screen">
         <HeaderOrg org={dataOrg} url={base} />

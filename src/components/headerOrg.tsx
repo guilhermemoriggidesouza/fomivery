@@ -8,15 +8,15 @@ export default function HeaderOrg({ org, url }: HeaderOrgProps) {
     return (
         <>
             <div className="w-full" style={{ backgroundColor: org.bgColor }}>
-                <div className="flex p-4 items-center w-fit">
-                    <div>
-                        {org.icon && (<img src={org.icon} className="pl-4 w-28 h-18" />)}
+                <div className="flex p-4 items-center">
+                    <div className="w-[60px] h-[60px] shrink-0 grow-0">
+                        {org.icon && (<img src={org.icon} className="rounded rounded-md object-cover w-[60px] h-[60px]" />)}
                     </div>
-                    <div className="mx-8" style={{ color: org.fontColor }}>
-                        <p className="font-xl">
+                    <div className="ml-2" style={{ color: org.fontColor }}>
+                        <p className="text-xl">
                             <b>{org.name}</b>
                         </p>
-                        <p>{org.address}</p>
+                        <p className="text-sm">{org.address}</p>
                     </div>
                 </div>
                 <hr />

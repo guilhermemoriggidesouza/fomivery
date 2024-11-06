@@ -12,7 +12,8 @@ export default class GetProducts {
 
     async execute(input: inputDTO): Promise<Product[]> {
         const products = await this.productRepository.findBySectionAndOrg(input.sectionId, input.orgId)
-        const menu = new Menu(products)
-        return menu.products
+        // todo: searchble tree error
+        // const menu = new Menu(products)
+        return products
     }
 }

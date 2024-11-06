@@ -11,7 +11,8 @@ export const orgTable = sqliteTable("org", {
   email: text("email").notNull(),
   bg_color: text("bg_color").notNull().default("#FFF"),
   font_color: text("font_color").notNull().default("#000"),
-  bg_image: text("bg_image").notNull(),
+  bg_image: text("bg_image"),
+  bg_color_screen: text("bg_color_screen"),
   salesman: text("salesman").notNull(),
   pay_day: integer({ mode: 'timestamp' }).notNull(),
   delivery_tax: real("delivery_tax")

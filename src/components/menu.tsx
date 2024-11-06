@@ -163,7 +163,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                 }
             </div>
 
-            <FloatingButton bottomPosition="bottom-20" >
+            <FloatingButton bottomPosition="bottom-10" >
                 <>
                     {boughtProducts.length > 0 && <div style={{ marginLeft: "-10px", marginBottom: "-20px", zIndex: "10" }} className="relative bg-red-500 text-white rouded rounded-full h-8 w-8 flex justify-center align-center items-center"><span className="m-auto">{qtdItems}</span></div>}
                     <button onClick={handleOpenCartModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
@@ -172,11 +172,11 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                 </>
             </FloatingButton >
 
-            <FloatingButton bottomPosition="bottom-6" >
+            {/* <FloatingButton bottomPosition="bottom-6" >
                 <button onClick={handleOpenSugestionModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
                     <p>Sugestão $$</p>
                 </button>
-            </FloatingButton >
+            </FloatingButton > */}
 
             <SugestionModal
                 open={openSugestion}

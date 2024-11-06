@@ -12,14 +12,14 @@ export default function Product({ title, id, value, image, description, onClick,
     const { theme: { bgColor, fontColor } } = useContext(ThemeContext)
     return (
         <>
-            <li id={`item-${id}`} className={`px-4 pb-4 transition ease-in-out transform active:scale-90`} key={id} >
+            <li id={`item-${id}`} className={`cursor-pointer px-4 pb-4 transition ease-in-out transform active:scale-90`} key={id} >
                 <div className="p-2 rounded rounded-sm" onClick={onClick} style={{ color: fontColor, backgroundColor: bgColor }}>
                     <div className="flex justify-between">
                         <div className="flex justify-start items-center">
-                            <span className="mx-2 mr-4">+</span>
+                            <span className="mx-2 mr-4 font-bold">+</span>
                             <p className="font-bold	inline-block mr-2" >{title}</p>
                         </div>
-                        {(image != "") && (
+                        {image && (
                             <div
                                 onClick={(e) => {
                                     onClickImage(image)
