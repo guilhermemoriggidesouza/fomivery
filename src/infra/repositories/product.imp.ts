@@ -16,9 +16,9 @@ export default class ProductRepositoryImp implements ProductRepository {
                 product.description,
                 product.title,
                 Number(product.value),
-                product.image,
                 product.section_id,
-                product.org_id
+                product.org_id,
+                product.image,
             )
         )
     };
@@ -32,9 +32,9 @@ export default class ProductRepositoryImp implements ProductRepository {
                 product.description,
                 product.title,
                 Number(product.value),
-                product.image,
                 product.section_id,
-                product.org_id
+                product.org_id,
+                product.image,
             )
         )
     }

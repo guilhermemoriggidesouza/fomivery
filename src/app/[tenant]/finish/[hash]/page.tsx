@@ -22,7 +22,7 @@ export default async function Finish({ params }: { params: { tenant: string, has
                 height: "100vh",
                 width: "100vw",
                 opacity: 0.8,
-                backgroundImage: "url(../../fundo-cardapio.jpg)",
+                backgroundImage: `url(${org.bgImage})`,
                 backgroundRepeat: "repeat",
                 backgroundAttachment: "fixed",
                 backgroundSize: "contain",

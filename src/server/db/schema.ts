@@ -46,7 +46,7 @@ export const productTable = sqliteTable("product", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   value: real("value").notNull(),
-  image: text("image").notNull(),
+  image: text("image"),
   section_id: integer("section_id").notNull().references(() => sectionTable.id),
   org_id: integer("org_id").notNull().references(() => orgTable.id)
 });

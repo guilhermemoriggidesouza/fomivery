@@ -42,9 +42,9 @@ export default class OrderRepositoryImp implements orderRepository {
                 op.product!.description,
                 op.product!.title,
                 op.product!.value,
-                op.product!.image,
                 op.product!.section_id,
                 op.product!.org_id,
+                op.product!.image,
                 op.order_product!.qtd_product
             )
         )
