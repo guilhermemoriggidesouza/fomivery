@@ -27,7 +27,7 @@ export default async function Home({ params }: { params: { tenant: string } }) {
       overflow: "hidden"
     }}>
       <div style={{
-        height: "100vh",
+        height: "100dvh",
         width: "100vw",
         opacity: 0.8,
         backgroundImage: dataOrg.bgImage != null ? `url(${dataOrg.bgImage})` : undefined,

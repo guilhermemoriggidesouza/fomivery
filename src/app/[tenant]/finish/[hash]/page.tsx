@@ -19,7 +19,7 @@ export default async function Finish({ params }: { params: { tenant: string, has
             overflow: "hidden"
         }}>
             <div style={{
-                height: "100vh",
+                height: "100dvh",
                 width: "100vw",
                 opacity: 0.8,
                 backgroundImage: org.bgImage != null ? `url(${org.bgImage})`: undefined,
