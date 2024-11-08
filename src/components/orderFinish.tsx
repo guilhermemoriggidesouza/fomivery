@@ -82,10 +82,10 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
         if (delivery && org.deliveryTax) {
             total += org.deliveryTax
         }
-        let change
+        let change: number | undefined
         if (changePayment) {
            const changeValue = Number(changePayment.replaceAll(',', '.'))
-           change = changeValue > total ? changeValue-total : null
+           change = changeValue > total ? changeValue-total : undefined
         }
         const text = `PEDIDO:[${order.id}]%0AOlá meu nome é *${name}*, e eu gostaria de pedir:%0A${listProducts}%0ATotal: R$${total.toFixed(2).replace(".", ",")}%0AIrei pagar no *${paymentType == 'DINHEIRO' ? 'Dinheiro' : 'Cartão'}*%0A${change ? 'E preciso de *troco para: R$' + change + '*%0A' : ''}${delivery ? `Para entregar no endereço:%0A*${address}, ${number}*` : 'Para *Retirada*'}%0A%0AOBSERVAÇÃO: *${obs}*%0A%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
         window.open(`https://api.whatsapp.com/send?phone=${org.telephone}&text=${text}`, '_blank')!.focus();
