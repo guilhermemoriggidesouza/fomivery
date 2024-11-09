@@ -14,7 +14,6 @@ export default function Products({ products, boughtProducts, onAddProduct }: Pro
 
     const getQtdBougth = (product: ProductDomain) => {
         const bougthProduct = boughtProducts?.find(bp => bp.id == product.id)
-        console.log(bougthProduct)
         return bougthProduct?.quantity
     }
     return (

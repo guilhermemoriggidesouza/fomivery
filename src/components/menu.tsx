@@ -50,6 +50,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
     const setProducts = async () => {
         const productsJson = window.localStorage.getItem('bougthProducts')
+        console.log(productsJson)
         const productsJsonTotal = window.localStorage.getItem('bougthProductsTotal')
         if (productsJson) {
             const bougthProducts = JSON.parse(productsJson)
@@ -110,6 +111,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const handlerAddProduct = (product: Product) => {
         let newArray = [...boughtProducts]
         let hasProduct = false
+        console.log('hanlder produtct', boughtProducts, newArray)
         newArray = newArray.map(item => {
             if (item.id == product.id) {
                 item.quantity += 1
@@ -118,15 +120,16 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
             return item
         })
         if (!hasProduct) {
-            product.quantity += 1
-            newArray.push(product)
+            const boughtProduct = {...product}
+            boughtProduct.quantity += 1
+            newArray.push(boughtProduct)
         }
         setQtdItens((value) => {
             window.localStorage.setItem('bougthProductsTotal', (value + 1).toString())
             return value + 1
         })
         setBoughtProducts(newArray)
-        window.localStorage.setItem('bougthProducts', JSON.stringify(boughtProducts))
+        window.localStorage.setItem('bougthProducts', JSON.stringify(newArray))
     }
 
     const handlerRemoveProduct = (product: Product) => {
