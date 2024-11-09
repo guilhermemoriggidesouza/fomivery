@@ -156,10 +156,10 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                     (sugested && dataSugested && dataSugested.products) ?
                         <>
                             <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
-                            <Products products={dataSugested.products} onAddProduct={handlerAddProduct} />
+                            <Products products={dataSugested.products} onAddProduct={handlerAddProduct} boughtProducts={boughtProducts} />
                         </>
                         :
-                        <Products products={dataGetProducts} onAddProduct={handlerAddProduct} />
+                        <Products boughtProducts={boughtProducts} products={dataGetProducts} onAddProduct={handlerAddProduct} />
                 }
             </div>
 

@@ -1,18 +1,34 @@
-INSERT INTO
-    org
+INSERT INTO 
+  org (
+    'id'
+    'name',
+    'tenant',
+    'address',
+    'icon',
+    'telephone',
+    'email',
+    'bg_color',
+    'font_color',
+    'bg_image',
+    'bg_color_screen',
+    'salesman',
+    'pay_day',
+    'delivery_tax'
+  )
 VALUES
     (
-        NULL, #id
-        "Espetos da Cá", #titulo
-        "espeto-ca", #tenant
-        "19999882026", #telefone
-        "rgb(26,244,62)", #fundo items
-        "#000", #font
-        "Moriggi", #vendedor
-        DATE ('now'), #dia que pagou
-        "https://cardap-io.com/bg/black.jpg", #foto fundo
-        "guilhermemoriggidesouza@gmail.com", #email
-        6, #taxa entrega
-        "Rua Cristina Caetano Machado, 1252, Santa Rita, Santa Bárbara do Oeste", #endereco
-        "https://cardap-io.com/logo/espeto-ca.jpg" #icon
+        NULL,
+        "orgTest",
+        "test",
+        "Rua Cristina Caetano Machado, 1252, Santa Rita, Santa Bárbara do Oeste",
+        "https://cardap-io.com/logo/espeto-ca.jpg"
+        "19999882026",
+        "guilhermemoriggidesouza@gmail.com",
+        NULL, 
+        "#000",
+        NULL,
+        NULL
+        "Moriggi",
+        DATE ('now'),
+        6
     )
