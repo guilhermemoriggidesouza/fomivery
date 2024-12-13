@@ -3,6 +3,7 @@ import NotFound from "~/components/notFound";
 import OrderFinish from "~/components/orderFinish";
 import Product from "~/domain/product";
 import { OrderType } from "~/domain/order";
+import Org from "~/domain/org";
 
 export default async function Finish({ params }: { params: { tenant: string, hash: string } }) {
     const dataOrg = await api.org.getOrg({ tenant: params.tenant })
@@ -12,7 +13,7 @@ export default async function Finish({ params }: { params: { tenant: string, has
     const dataOrder = await api.order.getOrder({ hash: params.hash })
     dataOrder.products = dataOrder.products.map((p: Product) => ({ ...p }))
     const order = { ...dataOrder } as OrderType
-    const org = { ...dataOrg }
+    const org = { ...dataOrg } as Org
     return (
         <main style={{
             color: dataOrg.fontColor,
