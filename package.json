@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "5.7.2",
+    "@googlemaps/google-maps-services-js": "^3.4.0",
     "@hookform/resolvers": "3.9.0",
     "@libsql/client": "0.10.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
@@ -29,6 +30,7 @@
     "@trpc/client": "11.0.0-rc.446",
     "@trpc/react-query": "11.0.0-rc.446",
     "@trpc/server": "11.0.0-rc.446",
+    "@uidotdev/usehooks": "^2.4.1",
     "animate.css": "^4.1.1",
     "bcrypt": "5.1.1",
     "class-variance-authority": "0.7.0",

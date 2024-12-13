@@ -6,10 +6,12 @@ export type inputDTO = {
     telephone: string,
     paymentType: string,
     changePayment?: number,
+    tax?: number,
     total: number,
     email?: string,
     delivery?: boolean,
     obs?: string,
+    address?: string,
     hash: string
 }
 
@@ -23,7 +25,7 @@ export default class FinishOrderUseCase {
         if (!order) {
             throw new Error("Error on get order to update")
         }
-        order.finish(input.name, input.paymentType, input.telephone, input.total, input.email, input.obs, input.changePayment, input.delivery)
+        order.finish(input.name, input.paymentType, input.telephone, input.total, input.email, input.obs, input.changePayment, input.delivery, input.address, input.tax)
         await this.orderRepository.update(order)
         if (!order) {
             throw new Error("Error on request order")

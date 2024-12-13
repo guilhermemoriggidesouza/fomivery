@@ -15,19 +15,22 @@ export const orgTable = sqliteTable("org", {
   bg_color_screen: text("bg_color_screen"),
   salesman: text("salesman").notNull(),
   pay_day: integer({ mode: 'timestamp' }).notNull(),
-  delivery_tax: real("delivery_tax")
+  delivery_tax: real("delivery_tax").default(2),
+  tax_per_km: real("tax_per_km").default(2)
 })
 
 export const orderTable = sqliteTable("order", {
   id: integer("id").primaryKey(),
   hash: text("hash").notNull(),
   total: real("total").notNull(),
+  address: text("address"),
   change_payment: real("change_payment"),
   payment_type: text("payment_type"),
   delivery: integer({ mode: 'boolean' }).notNull().default(true),
   telephone: text("telephone"),
   email: text("email"),
   name: text("name"),
+  tax: real("tax"),
   obs: text("obs"),
   created_at: integer({ mode: 'timestamp' })
     .notNull()

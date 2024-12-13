@@ -36,7 +36,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const [sugested, setSugested] = useState<boolean>(false);
     const [sugestionValue, setSugestionValue] = useState<number | undefined>();
     const [boughtProducts, setBoughtProducts] = useState<Product[]>([])
-    const { isFetching: isPendingProducts, data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
+    const { isPending: isPendingProducts, data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
         sectionId: section!.id, orgId
     }, {
         initialData: products,
@@ -50,7 +50,6 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
     const setProducts = async () => {
         const productsJson = window.localStorage.getItem('bougthProducts')
-        console.log(productsJson)
         const productsJsonTotal = window.localStorage.getItem('bougthProductsTotal')
         if (productsJson) {
             const bougthProducts = JSON.parse(productsJson)
@@ -65,7 +64,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
     const generateOrder = (data: Order) => {
         router.push(`/${tenant}/finish/${data.hash}`)
     }
-    const { isPending, mutate: mutateOrder } = api.menu.createOrder.useMutation({ onSuccess: generateOrder })
+    const { isPending, isSuccess, mutate: mutateOrder } = api.menu.createOrder.useMutation({ onSuccess: generateOrder })
     const changeSection = (id: number) => {
         const newArray = sectionList.map(section => {
             if (section.id == id) {
@@ -120,7 +119,7 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
             return item
         })
         if (!hasProduct) {
-            const boughtProduct = {...product}
+            const boughtProduct = { ...product }
             boughtProduct.quantity += 1
             newArray.push(boughtProduct)
         }
@@ -213,8 +212,9 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                 description="Assim que confirmar, basta fechar o pedido"
                 title="Aqui está seus itens"
                 saveButton={<>
-                    {!isPending ?
-                        <>
+                    {isPending || isSuccess ?
+                        <div className="w-100 flex justify-center"><Loading /></div>
+                        : <>
                             <Button className="mb-2" variant="outline" onClick={(e) => {
                                 setBoughtProducts([])
                                 setQtdItens(0)
@@ -224,12 +224,12 @@ export default function Menu({ sections, products, bgColor, fontColor, orgId, te
                                 Limpar carrinho
                             </Button>
                             <Button variant="outline" onClick={(e) =>
-                                mutateOrder({ products: boughtProducts.map(b => ({ id: b.id, qtd: b.quantity })), orgId, name: "Adelaide" })
+                                mutateOrder({ products: boughtProducts.map(b => ({ id: b.id, qtd: b.quantity })), orgId, name: "CLIENTE NAO FINALIZADO" })
                             }>
                                 Fechar pedido
                             </Button>
                         </>
-                        : <div className="w-100 flex justify-center"><Loading /></div>
+
                     }
                     {boughtProducts.length > 0 && <p className="my-2">Total: R$ {boughtProducts.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>}
                 </>}

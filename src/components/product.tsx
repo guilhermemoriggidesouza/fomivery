@@ -33,8 +33,8 @@ export default function Product({ title, id, value, image, description, onClick,
                                 onClickImage(image)
                                 e.stopPropagation()
                             }}
-                            className="cursor-pointer h-12 w-12">
-                            <img className="h-12 w-12 object-cover" src={image} />
+                            className="cursor-pointer">
+                            <img style={{width: "100px", height:"80px"}} className="rounded rounded-sm object-cover" src={image} />
                         </div>
                     )}
                 </div>

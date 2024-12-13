@@ -3,16 +3,15 @@
 import ThemeProvider from "~/context/themeProvider"
 import Order, { OrderType } from "~/domain/order"
 import Back from "./ui/back"
-import { Label } from "./ui/label"
-import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { UserInfosModal } from "./userInfos"
 import { useState } from "react"
 import Product from "~/domain/product"
 import Org from "~/domain/org"
 import { api } from "~/trpc/react"
-import { Textarea } from "./ui/textarea"
-import { Checkbox } from "./ui/checkbox"
+import { FormUserInfo, FormUserInfoType } from "./formUserInfo"
+import { telephoneMask } from "./ui/utils"
+import { useDebounce } from "@uidotdev/usehooks";
 
 export type OrderFinishProps = {
     orderFirst: OrderType
@@ -22,55 +21,50 @@ export type OrderFinishProps = {
 }
 export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: OrderFinishProps) {
     const [openUserInfos, setOpenUserInfos] = useState(false);
-    const [name, setName] = useState("");
-    const [order, setOrder] = useState(orderFirst);
-    const [email, setEmail] = useState("");
-    const [obs, setObs] = useState("");
-    const [telephone, setTelephone] = useState("");
-    const [number, setNumber] = useState("");
-    const [paymentType, setPaymentType] = useState("CARTAO");
-    const [delivery, setDelivery] = useState(true);
-    const [changePayment, setChangePayment] = useState<string | undefined>();
-    const [address, setAddress] = useState("");
-
-    const fetchCep = async (cep: string) => {
-        const addressInfo = await fetch(`https://viacep.com.br/ws/${cep}/json/`).then(res => res.json())
-        setAddress(`${addressInfo.logradouro}, ${addressInfo.bairro}, ${addressInfo.localidade}, ${addressInfo.uf}`)
+    const [payload, setPayload] = useState<FormUserInfoType>({ paymentType: 'CARTAO' });
+    const debouncePayload = useDebounce(payload, 2000)
+    const finishOrder = () => {
+        window.localStorage.clear()
+        setOpenUserInfos(false)
     }
 
-    const handleZipCode = (event: any) => {
-        const input = event.target
-        input.value = zipCodeMask(input.value)
-    }
-    const handleTelephone = (event: any) => {
-        const input = event.target
-        input.value = telephoneMask(input.value)
-    }
+    const { isSuccess: isSuccessFinishOrder, mutate: mutateOrder } = api.order.finishOrder.useMutation({ onSuccess: finishOrder })
+    const { isSuccess: isSuccessCalculateTax, isFetching: isPendingTaxCalculate, data: calculatedTax } = api.order.calculateTax
+        .useQuery({
+            orgId: org.id,
+            orgAddress: org.address!,
+            clientAddress: `${debouncePayload.address}, ${debouncePayload.number}`,
+        },
+            {
+                enabled: !!debouncePayload.address && !!debouncePayload.number,
+                retryOnMount: false,
+                refetchOnMount: false,
+                refetchOnReconnect: false,
+                refetchInterval: false,
+                refetchOnWindowFocus: false,
+                refetchIntervalInBackground: false,
+            })
 
-    const telephoneMask = (value: string) => {
-        if (!value) return ""
-        value = value.replace(/\D/g, '')
-        value = value.replace(/(\d{2})(\d{5})(\d)/, '($1) $2-$3')
-        return value
-    }
-
-    const zipCodeMask = (value: string) => {
-        if (!value) return ""
-        value = value.replace(/\D/g, '')
-        value = value.replace(/(\d{5})(\d)/, '$1-$2')
-        return value
-    }
+    const { isPending: isPendingOrder, data: order } = api.order.getOrder
+        .useQuery({
+            hash: orderFirst!.hash
+        }, {
+            initialData: Order.fromTypeToDomain(
+                orderFirst
+            ),
+            enabled: isSuccessFinishOrder || isSuccessCalculateTax
+        })
 
     const handlerSendWhats = () => {
-        if (delivery && (!number || !address)) {
-            alert("Prencha o endereço corretamente")
+        if (payload.delivery && (!payload.address || !payload.number)) {
+            alert("Preencha o endereço corretamente")
             return
         }
-        if (!name) {
+        if (!payload?.name) {
             alert("Está faltando seu nome")
             return
         }
-        if (!telephone) {
+        if (!payload.telephone) {
             alert("Está faltando seu telefone")
             return
         }
@@ -78,33 +72,53 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
             previous += `- *${current.quantity}x ${current.title}*%0A`
             return previous
         }, "")
-        let total = order.total
-        if (delivery && org.deliveryTax) {
-            total += org.deliveryTax
-        }
+        let total = getTotalValue(order)
         let change: number | undefined
-        if (changePayment) {
-           const changeValue = Number(changePayment.replaceAll(',', '.'))
-           change = changeValue > total ? changeValue-total : undefined
+        if (payload.changePayment) {
+            const changeValue = Number(payload.changePayment.replaceAll(',', '.'))
+            change = changeValue > total ? changeValue - total : undefined
         }
-        const text = `PEDIDO:[${order.id}]%0AOlá meu nome é *${name}*, e eu gostaria de pedir:%0A${listProducts}%0ATotal: R$${total.toFixed(2).replace(".", ",")}%0AIrei pagar no *${paymentType == 'DINHEIRO' ? 'Dinheiro' : 'Cartão'}*%0A${change ? 'E preciso de *troco para: R$' + change + '*%0A' : ''}${delivery ? `Para entregar no endereço:%0A*${address}, ${number}*` : 'Para *Retirada*'}%0A%0AOBSERVAÇÃO: *${obs}*%0A%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
+        const presentationSectionText = `PEDIDO:[${order.id}]%0AOlá meu nome é *${payload.name}*, e eu gostaria de pedir:`
+        const productsSectionText = `${listProducts}%0A%0ATotal: R$${total.toFixed(2).replace(".", ",")}`
+        const paymentSectionText = `Irei pagar no *${payload.paymentType}*%0A${change ? 'E preciso de *troco de: R$' + change + '*%0A' : ''}`
+        const deliverySectionText = `${payload.delivery ? `Para entregar no endereço:%0A*${payload.address}, ${payload.number}${payload.complement ? `, ${payload.complement}` : ''}*` : 'Para *Retirada*'}`
+        const text = `${presentationSectionText}%0A%0A${productsSectionText}%0A%0A${paymentSectionText}%0A%0A${deliverySectionText}%0A%0A%0AOBSERVAÇÃO: *${payload.obs || ""}*%0A%0A_Para mais informações do pedido acesse:_%0A${window.location.href}`
         window.open(`https://api.whatsapp.com/send?phone=${org.telephone}&text=${text}`, '_blank')!.focus();
-        mutateOrder({ name, email, hash: order.hash, telephone, obs, changePayment: change, paymentType, delivery, total })
+        mutateOrder({
+            name: payload.name,
+            hash: order.hash,
+            telephone: payload.telephone,
+            obs: payload.obs,
+            changePayment: payload.changePayment ? Number(payload.changePayment.replaceAll(',', '.')) : undefined,
+            paymentType: payload.paymentType!,
+            delivery: Boolean(payload.delivery),
+            total,
+            address: payload.delivery ? payload.address : undefined,
+            tax: (payload.delivery && calculatedTax) ? calculatedTax.taxValue : undefined
+        })
     }
 
-    const finishOrder = (data: Order) => {
-        setOrder({ ...data } as OrderType)
-        window.localStorage.clear()
-        setOpenUserInfos(false)
+    const getTotalValue = (order: Order) => {
+        if (calculatedTax?.taxValue && payload.delivery) {
+            return order.total + calculatedTax.taxValue
+        }
+        return order.total + (order.tax ?? 0)
     }
-    const { isPending, mutate: mutateOrder } = api.order.finishOrder.useMutation({ onSuccess: finishOrder })
-
+    const getProductValue = (order: Order) => {
+        if (order.tax) {
+            return order.total - order.tax
+        } else {
+            return order.total
+        }
+    }
     return (
         <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
-            <div className="blockquote animate__slideInDown animate__animated bg-white sm:m-auto mx-4 h-[95%] mb-4" style={{ maxWidth: "600px" }}>
+            <div className="blockquote animate__slideInDown animate__animated sm:m-auto mx-4 h-[95%] mb-4" style={{ color: fontColor, backgroundColor: bgColor, maxWidth: "600px" }}>
                 <div className="flex">
                     <Back />
-                    <p className="ml-4 text-xl mb-2">Seu pedido deu R${order.total.toFixed(2).replace(".", ",")}</p>
+                    {
+                        order.finishAt ? <p className="ml-4 text-xl mb-2"><strong>Total do pedido: R$ {order.total.toFixed(2).replace(".", ",")}</strong></p> : <p className="ml-4 text-xl mb-2"><strong>Confira abaixo seu pedido</strong></p>
+                    }
                 </div>
 
                 <hr />
@@ -119,10 +133,11 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
                 </div>
                 <hr />
                 <div className="flex flex-col justify-center mt-2 items-center h-[20%]">
-                    <p className={`${order.finishAt && "mt-4"}`}>Total: R$ {order.products.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>
+                    {order.tax && <p className={`${order.finishAt && "mt-4"}`}>Taxa de entrega: R$ {order.tax.toFixed(2).replace(".", ",")}</p>}
+                    <p className={`${!order.tax && "mt-4"}`}>Total produtos: R$ {getProductValue(order).toFixed(2).replace(".", ",")}</p>
                     {order.finishAt ?
                         (<>
-                            <div className="flex text-lg">
+                            <div className="flex text-lg mt-4">
                                 <p className="w-full text-center"><b>Seu pedido foi feito com sucesso!</b></p>
                             </div>
                             <p className="w-full text-center"><i>caso tenha uma duvida, basta entrar em contato no número: {telephoneMask(org.telephone)}</i></p>
@@ -139,188 +154,30 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
                 onOpenChange={setOpenUserInfos}
                 description="Quase lá, informe seus dados para montarmos seu pedido"
                 title="Informações pessoais"
-                saveButton={<>
+                saveButton={<div className="text-center">
+                    <p>
+                        <strong>TOTAL PEDIDO: R$ {getTotalValue(order).toFixed(2).replace(".", ",")}</strong>
+                        <br /><i>O valor do pedido deve ser pago na entrega</i>
+                    </p>
                     <Button variant="outline" onClick={handlerSendWhats}>
                         Enviar WhatsApp
                     </Button>
-                </>}
+                </div>}
             >
-                <>
-                    <div className="mb-2">
-                        <Label htmlFor="name" className="text-left">
-                            Nome Completo:
-                        </Label>
-                        <Input
-                            type="text"
-                            placeholder="Seu Nome"
-                            onChange={(e) => {
-                                setName(e.target.value)
-                            }}
-                            id="name"
-                        />
-                    </div>
-                    <div className="mb-2">
-                        <Label htmlFor="telephone" className="text-left">
-                            Telefone:
-                        </Label>
-                        <Input
-                            type="text"
-                            placeholder="(00) 00000-0000"
-                            onChange={(e) => {
-                                setTelephone(e.target.value)
-                            }}
-                            onKeyUp={handleTelephone}
-                            maxLength={15}
-                            id="telephone"
-                        />
-                    </div>
-                    {/* <Label htmlFor="email" className="text-left">
-                        Email:
-                    </Label>
-                    <Input
-                        type="text"
-                        placeholder="email@host.com"
-                        onChange={(e) => {
-                            setEmail(e.target.value)
-                        }}
-                        id="email"
-                    /> */}
-                    <div className="flex gap-5 mb-2">
-                        <div className="flex items-center">
-                            <Checkbox
-                                id="delivery"
-                                checked={delivery}
-                                onCheckedChange={(e) => {
-                                    setDelivery(true)
-                                }}
-                            />
-                            <Label htmlFor="delivery" className="ml-2">
-                                Entrega {org.deliveryTax && `(+ R$ ${org.deliveryTax.toFixed(2).replaceAll(".", ",")})`}
-                            </Label>
-                        </div>
-                        <div className="flex items-center">
-                            <Checkbox
-                                id="notDelivery"
-                                checked={!delivery}
-                                onCheckedChange={(e) => {
-                                    setDelivery(false)
-                                }}
-                            />
-                            <Label htmlFor="notDelivery" className="ml-2">
-                                Retirada
-                            </Label>
-                        </div>
-                    </div>
-                    {delivery && (
-                        <>
-                            <div className="mb-2">
-                                <Label htmlFor="cep" className="text-left">
-                                    Cep (Opcional para rápido preenchimento):
-                                </Label>
-                                <Input
-                                    type="text"
-                                    placeholder="00000-000"
-                                    onKeyUp={handleZipCode}
-                                    maxLength={9}
-                                    onChange={(e: any) => {
-                                        if (e.target.value.length == 9) {
-                                            fetchCep(e.target.value)
-                                        }
-                                    }}
-                                    id="cep"
-                                />
-                            </div>
-                            <div className="mb-2">
-
-                                <Label htmlFor="address" className="text-left">
-                                    Endereço:
-                                </Label>
-                                <Input
-                                    type="text"
-                                    value={address}
-                                    placeholder="Rua, Bairro, Cidade"
-                                    onChange={(e) => {
-                                        setAddress(e.target.value)
-                                    }}
-                                    id="address"
-                                />
-                            </div>
-                            <div className="mb-2">
-                                <Label htmlFor="addessMore" className="text-left">
-                                    Numero e Complemento:
-                                </Label>
-                                <Input
-                                    type="text"
-                                    placeholder="Numero e Complemento"
-                                    onChange={(e) => {
-                                        setNumber(e.target.value)
-                                    }}
-                                    id="addessMore"
-                                />
-                            </div>
-                        </>
-                    )}
-                    <p className="text-sm text-left">
-                        Qual a forma de pagamento?:
-                    </p>
-                    <div className="flex items-center mb-2">
-                        <Checkbox
-                            id="paymentTypeCard"
-                            checked={Boolean(paymentType == "CARTAO")}
-                            onCheckedChange={(e) => {
-                                if (e) {
-                                    setPaymentType("CARTAO")
-                                    setChangePayment(undefined)
-                                }
-                            }}
-                        />
-                        <Label htmlFor="paymentTypeCard" className="ml-2">
-                            Cartão
-                        </Label>
-                    </div>
-                    <div className="flex items-center">
-                        <Checkbox
-                            id="paymentTypeMoney"
-                            checked={Boolean(paymentType == "DINHEIRO")}
-                            onCheckedChange={(e) => {
-                                if (e) {
-                                    setPaymentType("DINHEIRO")
-                                }
-                            }}
-                        />
-                        <Label htmlFor="paymentTypeMoney" className="ml-2">
-                            Dinheiro
-                        </Label>
-                    </div>
-                    {paymentType == "DINHEIRO" ? <>
-                        <Label htmlFor="changePayment" className="text-left">
-                            Troco para quantos?:
-                        </Label>
-                        <Input
-                            type="number"
-                            placeholder="20"
-                            onChange={(e) => {
-                                setChangePayment(e.target.value)
-                            }}
-                            id="changePayment"
-                        />
-                    </> : null}
-                    <div className="my-2">
-                        <Label htmlFor="obs" className="text-left">
-                            Observações:
-                        </Label>
-                        <Textarea
-                            placeholder="Adicione sua observação"
-                            onChange={(e) => {
-                                setObs(e.target.value)
-                            }}
-                            id="obs"
-                        />
-                    </div>
-                    <p className="my-4">
-                        <i>O valor do pedido deve ser pago na entrega</i>
-                    </p>
-                </>
+                <FormUserInfo
+                    isPendingTaxValue={isPendingTaxCalculate}
+                    taxValue={calculatedTax?.taxValue}
+                    setField={(newPayload) => {
+                        setPayload(oldPayload => {
+                            return {
+                                ...oldPayload,
+                                ...newPayload,
+                            }
+                        })
+                    }}
+                    org={org}
+                    payload={payload}
+                />
             </UserInfosModal>
         </ThemeProvider >
     )

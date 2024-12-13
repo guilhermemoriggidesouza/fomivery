@@ -9,19 +9,20 @@ export type OrderType = {
     orgId: number,
     paymentType: string,
     delivery: boolean,
-    changePayment?: string | null,
+    changePayment?: number | null | undefined,
     products: Product[],
     email?: string | null,
     obs?: string,
     telephone?: string | null,
     finishAt?: Date | null,
     id?: number | null,
+    address?: string | null,
+    tax?: number | null,
 }
 
 export default class Order {
-    private constructor(
+    constructor(
         public total: number,
-        public readonly createdAt: Date,
         public readonly hash: string,
         public readonly orgId: number,
         public products: Product[],
@@ -29,11 +30,14 @@ export default class Order {
         public name?: string | null,
         public email?: string | null,
         public telephone?: string | null,
+        public readonly createdAt?: Date,
         public finishAt?: Date | null,
         public obs?: string | null,
         public paymentType?: string | null,
         public changePayment?: number | null,
         public readonly id?: number | null,
+        public address?: string | null,
+        public tax?: number | null,
     ) {
     }
 
@@ -44,7 +48,9 @@ export default class Order {
         email?: string,
         obs?: string,
         changePayment?: number,
-        delivery?: boolean
+        delivery?: boolean,
+        address?: string,
+        tax?: number
     ) {
         this.name = name
         this.telephone = telephone
@@ -55,6 +61,8 @@ export default class Order {
         this.changePayment = changePayment
         this.paymentType = paymentType
         this.total = total
+        this.address = address
+        this.tax = tax
     }
 
     static createDomain(products: Product[], orgId: number, telephone?: string, email?: string, name?: string,) {
@@ -63,9 +71,28 @@ export default class Order {
         })
         const todayDate = new Date()
         const hash = v4()
-        return new Order(total, todayDate, hash, orgId, products, true, name, telephone, email)
+        return new Order(total, hash, orgId, products, true, name, email, telephone, todayDate)
     }
-
+    static fromTypeToDomain(orderType: OrderType) {
+        return new Order(
+            orderType.total,
+            orderType.hash,
+            orderType.orgId,
+            orderType.products,
+            orderType.delivery,
+            orderType.name,
+            orderType.email,
+            orderType.telephone,
+            orderType.createdAt,
+            orderType.finishAt,
+            orderType.obs,
+            orderType.paymentType,
+            orderType.changePayment,
+            orderType.id,
+            orderType.address,
+            orderType.tax
+        )
+    }
     static toDomain(orderDb: {
         id: number,
         total: number,
@@ -79,12 +106,13 @@ export default class Order {
         obs?: string | null
         finish_at?: Date | null,
         payment_type?: string | null,
-        change_payment?: number | null
+        change_payment?: number | null,
+        address?: string | null,
+        tax?: number | null
     }) {
         const products: Product[] = []
         return new Order(
             orderDb.total,
-            orderDb.created_at,
             orderDb.hash,
             orderDb.org_id,
             products,
@@ -92,11 +120,14 @@ export default class Order {
             orderDb.name,
             orderDb.email,
             orderDb.telephone,
+            orderDb.created_at,
             orderDb.finish_at,
             orderDb.obs,
             orderDb.payment_type,
             orderDb.change_payment,
-            orderDb.id
+            orderDb.id,
+            orderDb.address,
+            orderDb.tax
         )
     }
 

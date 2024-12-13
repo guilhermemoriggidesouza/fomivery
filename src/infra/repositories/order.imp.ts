@@ -17,10 +17,13 @@ export default class OrderRepositoryImp implements orderRepository {
                 change_payment: order.changePayment,
                 payment_type: order.paymentType,
                 delivery: order.delivery,
-                total: order.total
+                total: order.total,
+                address: order.address,
+                tax: order.tax
             })
             .where(eq(orderTable.id, order.id!))
     };
+
     insertProducts(products: Product[], orderId: number, orgId: number): { product_id: number, order_id: number, org_id: number, qtd_product: number }[] {
         return products.map(p => ({ product_id: p.id, order_id: orderId, org_id: orgId, qtd_product: p.quantity! }))
     }
@@ -55,6 +58,7 @@ export default class OrderRepositoryImp implements orderRepository {
         const [orderCreated] = await db.insert(orderTable).values({
             name: order.name,
             hash: order.hash,
+            address: order.address,
             total: order.total,
             telephone: order.telephone,
             email: order.email,

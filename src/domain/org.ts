@@ -13,7 +13,17 @@ export default class Org {
         public readonly icon?: string | null,
         public readonly address?: string | null,
         public readonly deliveryTax?: number | null,
+        public readonly taxPerKm?: number | null,
     ) {
 
+    }
+
+    calculateTax(distance: number): number {
+        console.log(distance, this.taxPerKm, this.deliveryTax)
+        if (distance <= this.taxPerKm!) {
+            return this.deliveryTax!
+        } else {
+            return Math.round((distance / this.taxPerKm!) * this.deliveryTax!)
+        }
     }
 }

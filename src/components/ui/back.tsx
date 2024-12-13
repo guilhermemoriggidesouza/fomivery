@@ -4,7 +4,7 @@ export default function Back() {
     const router = useRouter()
 
     return (
-        <a className="p-1 w-5 h-5 text-black bg-white hover:text-white" onClick={() => {
+        <a className="p-1 w-5 h-5" onClick={() => {
             router.back()
         }} >
             <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
