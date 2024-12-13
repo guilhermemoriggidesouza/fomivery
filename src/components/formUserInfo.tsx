@@ -95,7 +95,7 @@ export function FormUserInfo({ payload, setField, org, isPendingTaxValue, taxVal
                     }}
                 />
                 <Label htmlFor="delivery" className="ml-2">
-                    Entrega {org.deliveryTax && `(+ R$ ${org.deliveryTax.toFixed(2).replaceAll(".", ",")}/km)`}
+                    Entrega
                 </Label>
             </div>
             <div className="flex items-center">
