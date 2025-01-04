@@ -132,12 +132,12 @@ export default function OrderFinish({ orderFirst, bgColor, fontColor, org }: Ord
                     </p>)}
                 </div>
                 <hr />
-                <div className="flex flex-col justify-center mt-2 items-center h-[20%]">
-                    {order.tax && <p className={`${order.finishAt && "mt-4"}`}>Taxa de entrega: R$ {order.tax.toFixed(2).replace(".", ",")}</p>}
-                    <p className={`${!order.tax && "mt-4"}`}>Total produtos: R$ {getProductValue(order).toFixed(2).replace(".", ",")}</p>
+                <p className="mt-4">Total produtos: R$ {getProductValue(order).toFixed(2).replace(".", ",")}</p>
+                {order.tax && <p>Taxa de entrega: R$ {order.tax.toFixed(2).replace(".", ",")}</p>}
+                <div className="flex flex-col justify-center mt-2 items-center">
                     {order.finishAt ?
                         (<>
-                            <div className="flex text-lg mt-4">
+                            <div className="flex text-lg">
                                 <p className="w-full text-center"><b>Seu pedido foi feito com sucesso!</b></p>
                             </div>
                             <p className="w-full text-center"><i>caso tenha uma duvida, basta entrar em contato no número: {telephoneMask(org.telephone)}</i></p>

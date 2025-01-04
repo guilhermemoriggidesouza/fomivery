@@ -10,7 +10,6 @@ export default class GetOrder {
 
     async execute(input: inputDTO): Promise<Order> {
         const order = await this.orderRepository.findByHash(input.hash)
-        console.log("execute", order)
         if (!order) {
             throw new Error("Order error")
         }

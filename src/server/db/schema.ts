@@ -59,6 +59,7 @@ export const orderProdTable = sqliteTable("order_product", {
   id: integer("id").primaryKey(),
   org_id: integer("org_id").notNull().references(() => orgTable.id),
   product_id: integer("product_id").notNull().references(() => productTable.id),
+  product_id_additional: integer("product_id").notNull().references(() => productTable.id),
   qtd_product: integer("qtd_product").notNull(),
   order_id: integer("order_id").notNull().references(() => orderTable.id),
 })
