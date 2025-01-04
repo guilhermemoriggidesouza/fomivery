@@ -14,29 +14,29 @@ export default function Product({ title, id, value, image, description, onClick,
     return (
         <>
             <li id={`item-${id}`} className={`cursor-pointer px-4 pb-4`} key={id} >
-                <div className="flex items-center p-2 justify-between rounded rounded-sm" style={{ color: fontColor, backgroundColor: bgColor }}>
-                    <div onClick={onClick} className="w-full transition ease-in-out transform active:scale-90">
-                        <div className="flex justify-between">
-                            <div className="flex justify-start items-center">
-                                <span className="mx-2 mr-4 font-bold">{qtdBougth ? `(${qtdBougth})` : "+"}</span>
-                                <p className="font-bold	inline-block mr-2" >{title}</p>
-                            </div>
-                        </div>
-                        <div className="flex justify-start items-center">
-                            <span className="inline-block text-nowrap">R$ {value.toFixed(2).replace(".", ",")}</span>
-                        </div>
-                        <p >{description}</p>
+                <div onClick={onClick} className="p-2 max-h-[120px] rounded rounded-sm transition ease-in-out transform active:scale-90" style={{ color: fontColor, backgroundColor: bgColor }}>
+                    <div className="flex justify-start items-center mb-2">
+                        <span className="mx-2 mr-4 font-bold">{qtdBougth ? `(${qtdBougth})` : "+"}</span>
+                        <p className="font-bold mr-2 line-clamp-1" >{title}</p>
                     </div>
-                    {image && (
-                        <div
-                            onClick={(e) => {
-                                onClickImage(image)
-                                e.stopPropagation()
-                            }}
-                            className="cursor-pointer">
-                            <img style={{width: "100px", height:"80px"}} className="rounded rounded-sm object-cover" src={image} />
+                    <div className="flex">
+                        {image && (
+                            <div
+                                onClick={(e) => {
+                                    onClickImage({ image, title, description, value: `R$ ${value.toFixed(2).replace(".", ",")}` })
+                                    e.stopPropagation()
+                                }}
+                                className="cursor-pointer">
+                                <img className="w-[70px] max-w-[70px] h-[70px] rounded rounded-sm object-fill" src={image} />
+                            </div>
+                        )}
+                        <div className={`${image && "ml-2"} w-full `}>
+                            <div className="flex justify-start items-center">
+                                <span className="inline-block text-nowrap">R$ {value.toFixed(2).replace(".", ",")}</span>
+                            </div>
+                            <p className="line-clamp-2" >{description}</p>
                         </div>
-                    )}
+                    </div>
                 </div>
             </li >
         </>

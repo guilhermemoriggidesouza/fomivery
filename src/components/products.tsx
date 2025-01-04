@@ -3,6 +3,7 @@ import ProductDomain from "~/domain/product"
 import Product from "./product"
 import { useState } from "react"
 import { ImageModal } from "./image"
+import { title } from "process"
 export type ProductsProps = {
     products: ProductDomain[]
     boughtProducts?: ProductDomain[]
@@ -10,7 +11,7 @@ export type ProductsProps = {
 }
 
 export default function Products({ products, boughtProducts, onAddProduct }: ProductsProps) {
-    const [imageModal, setImageModal] = useState<string | undefined>()
+    const [imageModal, setImageModal] = useState<any | undefined>()
 
     const getQtdBougth = (product: ProductDomain) => {
         const bougthProduct = boughtProducts?.find(bp => bp.id == product.id)
@@ -24,7 +25,7 @@ export default function Products({ products, boughtProducts, onAddProduct }: Pro
                         key={product.id}
                         {...product}
                         onClick={(e) => onAddProduct(product)}
-                        onClickImage={(image) => setImageModal(image)}
+                        onClickImage={(product) => setImageModal(product)}
                         qtdBougth={getQtdBougth(product)}
                     />
                 }
@@ -33,9 +34,13 @@ export default function Products({ products, boughtProducts, onAddProduct }: Pro
             </ul>
             <ImageModal
                 open={imageModal}
+                title={`${imageModal?.title}, ${imageModal?.value}`}
+                description={imageModal?.description}
                 onOpenChange={() => setImageModal(undefined)}
             >
-                <img src={imageModal} className="w-full h-full object-contain" />
+                <>
+                    <img src={imageModal?.image} className="w-full h-full object-contain" />
+                </>
             </ImageModal>
         </>
     )
