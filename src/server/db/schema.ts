@@ -45,21 +45,36 @@ export const sectionTable = sqliteTable("section", {
   org_id: integer("org_id").notNull().references(() => orgTable.id)
 })
 
+export const additionalSectionTable = sqliteTable("additional_section", {
+  id: integer('id').primaryKey(),
+  title: text("title").notNull(),
+  org_id: integer("org_id").notNull().references(() => orgTable.id),
+  max_per_additional: integer("max_per_additional")
+})
+
 export const productTable = sqliteTable("product", {
   id: integer('id').primaryKey(),
   title: text("title").notNull(),
-  description: text("description").notNull(),
+  description: text("description"),
   value: real("value").notNull(),
   image: text("image"),
-  section_id: integer("section_id").notNull().references(() => sectionTable.id),
-  org_id: integer("org_id").notNull().references(() => orgTable.id)
+  section_id: integer("section_id").references(() => sectionTable.id),
+  additional_section_id: integer("additional_section_id").references(() => additionalSectionTable.id),
+  org_id: integer("org_id").notNull().references(() => orgTable.id),
+  has_additional: integer({ mode: 'boolean' }).default(false)
 });
 
 export const orderProdTable = sqliteTable("order_product", {
   id: integer("id").primaryKey(),
   org_id: integer("org_id").notNull().references(() => orgTable.id),
   product_id: integer("product_id").notNull().references(() => productTable.id),
-  product_id_additional: integer("product_id").notNull().references(() => productTable.id),
+  product_id_owner: integer("product_id_owner").references(() => productTable.id),
   qtd_product: integer("qtd_product").notNull(),
   order_id: integer("order_id").notNull().references(() => orderTable.id),
+})
+
+export const productAdditionalTable = sqliteTable("product_additional", {
+  id: integer('id').primaryKey(),
+  id_product_owner: integer("id_product_owner").references(() => productTable.id),
+  id_product_additional: integer("id_product_additional").references(() => productTable.id),
 })

@@ -23,7 +23,7 @@ export default function Sections({ sections, changeSection }: SectionsProps) {
         <ul
             id="list-product"
             ref={reful}
-            className="list-none flex relative block rounded rounded-sm whitespace-nowrap overflow-x-visible overflow-y-hidden"
+            className="list-none flex relative block whitespace-nowrap overflow-x-visible overflow-y-hidden"
             style={{ color: fontColor, backgroundColor: bgColor }}
         >
             {sections.map((section: SectionItem) =>

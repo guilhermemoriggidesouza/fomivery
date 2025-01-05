@@ -120,6 +120,34 @@
       "when": 1734052315071,
       "tag": "0016_ambiguous_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1736116854233,
+      "tag": "0017_panoramic_obadiah_stane",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1736119209738,
+      "tag": "0018_solid_rocket_racer",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1736120358102,
+      "tag": "0019_groovy_black_panther",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1736120482284,
+      "tag": "0020_clammy_sharon_carter",
+      "breakpoints": true
     }
   ]
 }
