@@ -42,11 +42,11 @@ export default class OrderRepositoryImp implements orderRepository {
         orderDomain.products = orderRecovery.map(op =>
             new Product(
                 op.product!.id,
-                op.product!.description,
                 op.product!.title,
                 op.product!.value,
-                op.product!.section_id,
                 op.product!.org_id,
+                op.product!.section_id,
+                op.product!.description,
                 op.product!.image,
                 op.order_product!.qtd_product
             )

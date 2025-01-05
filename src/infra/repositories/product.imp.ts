@@ -13,11 +13,11 @@ export default class ProductRepositoryImp implements ProductRepository {
         return products.map(product =>
             new Product(
                 product.id,
-                product.description,
                 product.title,
                 Number(product.value),
-                product.section_id,
                 product.org_id,
+                product.section_id,
+                product.description,
                 product.image,
             )
         )
@@ -29,11 +29,11 @@ export default class ProductRepositoryImp implements ProductRepository {
         return products.map(product =>
             new Product(
                 product.id,
-                product.description,
                 product.title,
                 Number(product.value),
-                product.section_id,
                 product.org_id,
+                product.section_id,
+                product.description,
                 product.image,
             )
         )
