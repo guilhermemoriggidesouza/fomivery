@@ -7,6 +7,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { headers } from 'next/headers';
 import './global.css'
 import 'animate.css';
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Cardap-io",
@@ -22,6 +24,8 @@ export default function RootLayout({
 
   return (
     <html lang="en" style={{ overflow: "hidden" }}>
+       <SpeedInsights />
+       <Analytics />
       <head>
         <link rel="manifest" href={`${base}/manifest.json`} />
         <script src={`${base}/pwaStart.js`} async />

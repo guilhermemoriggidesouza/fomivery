@@ -5,8 +5,6 @@ import Section from "~/domain/section";
 import NotFound from "~/components/notFound";
 import HeaderOrg from "~/components/headerOrg";
 import { headers } from "next/headers";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/react"
 
 export default async function Home({ params }: { params: { tenant: string } }) {
   const dataOrg = await api.org.getOrg({ tenant: params.tenant })
@@ -28,8 +26,6 @@ export default async function Home({ params }: { params: { tenant: string } }) {
       color: dataOrg.fontColor,
       overflow: "hidden"
     }}>
-      <SpeedInsights />
-      <Analytics />
       <div style={{
         height: "100dvh",
         width: "100vw",
