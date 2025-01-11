@@ -1,5 +1,5 @@
 import { createClient } from "@libsql/client";
-import 'dotenv/config'
+import "dotenv/config";
 import { drizzle } from "drizzle-orm/libsql";
 
 const createDrizzleClient = () => {
@@ -8,7 +8,7 @@ const createDrizzleClient = () => {
     authToken: process.env.TURSO_AUTH_TOKEN,
   });
   return drizzle(turso);
-}
+};
 
 const globalForDrizzle = globalThis as unknown as {
   drizzle: ReturnType<typeof createDrizzleClient> | undefined;

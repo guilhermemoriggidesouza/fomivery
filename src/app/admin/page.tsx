@@ -1,10 +1,6 @@
-"use server"
+"use server";
 import { api } from "~/trpc/server";
 
 export default async function LoginPage() {
-    return (
-        <main>
-            {/* <Login /> */}
-        </main>
-    );
+  return <main>{/* <Login /> */}</main>;
 }

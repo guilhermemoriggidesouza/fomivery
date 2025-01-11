@@ -1,15 +1,15 @@
-import Section from "~/domain/section"
-import SectionRepository from "../repositories/section"
+import Section from "~/domain/section";
+import SectionRepository from "../repositories/section";
 
 export type inputDTO = {
-    orgId: number
-}
+  orgId: number;
+};
 
 export default class GetSection {
-    constructor(private readonly sectionRepository: SectionRepository) { }
+  constructor(private readonly sectionRepository: SectionRepository) {}
 
-    async execute(input: inputDTO): Promise<Section[]> {
-        const sections = await this.sectionRepository.findByOrgId(input.orgId)
-        return sections
-    }
+  async execute(input: inputDTO): Promise<Section[]> {
+    const sections = await this.sectionRepository.findByOrgId(input.orgId);
+    return sections;
+  }
 }

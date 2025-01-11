@@ -21,3 +21,12 @@ export const createQueryClient = () =>
       },
     },
   });
+
+export const noReLoading = {
+  retryOnMount: false,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
+  refetchInterval: false,
+  refetchOnWindowFocus: false,
+  refetchIntervalInBackground: false,
+};

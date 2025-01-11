@@ -1,252 +1,393 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import Products from "./products";
 import { SectionItem } from "./section";
 import Sections from "./sections";
 import FloatingButton from "./floatingButton";
 import { Button } from "./ui/button";
-import { SugestionModal } from "./sugestion";
+import { SugestionModal } from "./modal/sugestion";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import SugestedBadge from "./sugestedBadget";
 import { api } from "~/trpc/react";
 import Product from "~/domain/product";
-import { CartModal } from "./cart";
+import { CartModal } from "./modal/cart";
 import ThemeProvider from "~/context/themeProvider";
 import Loading from "./ui/loading";
 import Order from "~/domain/order";
 import { useRouter } from "next/navigation";
+import { AdditionalModal } from "./modal/aditional";
+import { noReLoading } from "~/trpc/query-client";
 
 export type MenuProp = {
-    sections: SectionItem[],
-    products: Product[],
-    bgColor: string,
-    fontColor: string,
-    orgId: number,
-    tenant: string
-}
+  sections: SectionItem[];
+  products: Product[];
+  bgColor: string;
+  fontColor: string;
+  orgId: number;
+  tenant: string;
+};
 
-export default function Menu({ sections, products, bgColor, fontColor, orgId, tenant }: MenuProp) {
-    const router = useRouter()
-    const [sectionList, setSectionList] = useState(sections)
-    const [section, setSection] = useState<SectionItem>(sections[0]!)
-    const [openSugestion, setOpenSugestion] = useState(false);
-    const [qtdItems, setQtdItens] = useState(0);
-    const [openCart, setOpenCart] = useState(false);
-    const [sugested, setSugested] = useState<boolean>(false);
-    const [sugestionValue, setSugestionValue] = useState<number | undefined>();
-    const [boughtProducts, setBoughtProducts] = useState<Product[]>([])
-    const { isPending: isPendingProducts, data: dataGetProducts, refetch: refetchGetProducts } = api.menu.getProducts.useQuery({
-        sectionId: section!.id, orgId
-    }, {
-        initialData: products,
-        retryOnMount: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
-        refetchIntervalInBackground: false,
-    })
-    const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation()
-    const setProducts = async () => {
-        const productsJson = window.localStorage.getItem('bougthProducts')
-        const productsJsonTotal = window.localStorage.getItem('bougthProductsTotal')
-        if (productsJson) {
-            const bougthProducts = JSON.parse(productsJson)
-            setQtdItens(Number(productsJsonTotal))
-            setBoughtProducts(bougthProducts)
+export default function Menu({
+  sections,
+  products,
+  bgColor,
+  fontColor,
+  orgId,
+  tenant,
+}: MenuProp) {
+  const router = useRouter();
+  const [sectionList, setSectionList] = useState(sections);
+  const [section, setSection] = useState<SectionItem>(sections[0]!);
+  const [openSugestion, setOpenSugestion] = useState(false);
+  const [qtdItems, setQtdItens] = useState(0);
+  const [openCart, setOpenCart] = useState(false);
+  const [productSelected, setProductSelected] = useState<Product | undefined>();
+  const [sugested, setSugested] = useState<boolean>(false);
+  const [sugestionValue, setSugestionValue] = useState<number | undefined>();
+  const [boughtProducts, setBoughtProducts] = useState<Product[]>([]);
+  const {
+    isFetching: isPendingProducts,
+    data: dataGetProducts,
+    refetch: refetchGetProducts,
+  } = api.menu.getProducts.useQuery(
+    {
+      sectionId: section!.id,
+      orgId,
+    },
+    { initialData: products, ...noReLoading },
+  );
+
+  const {
+    isFetching: isPendingAdditional,
+    data: dataGetAdditional,
+    refetch: refetchGetAdditional,
+  } = api.menu.getAdditional.useQuery(
+    {
+      productId: productSelected!.id!,
+    },
+    {
+      ...noReLoading,
+      enabled: Boolean(productSelected),
+    },
+  );
+  const { data: dataSugested, mutate } = api.menu.createSugestion.useMutation();
+  const setProducts = async () => {
+    const productsJson = window.sessionStorage.getItem("bougthProducts");
+    const productsJsonTotal = window.sessionStorage.getItem(
+      "bougthProductsTotal",
+    );
+    if (productsJson) {
+      const bougthProducts = JSON.parse(productsJson);
+      setQtdItens(Number(productsJsonTotal));
+      setBoughtProducts(bougthProducts);
+    }
+  };
+  useEffect(() => {
+    setProducts();
+  }, []);
+
+  const generateOrder = (data: Order) => {
+    router.push(`/${tenant}/finish/${data.hash}`);
+  };
+  const {
+    isPending,
+    isSuccess,
+    mutate: mutateOrder,
+  } = api.menu.createOrder.useMutation({ onSuccess: generateOrder });
+  const changeSection = (id: number) => {
+    const newArray = sectionList.map((section) => {
+      if (section.id == id) {
+        section.selected = true;
+        if (sugested && sugestionValue) {
+          mutate({ sugestionValue, sectionId: section.id, orgId });
         }
-    }
-    useEffect(() => {
-        setProducts()
-    }, [])
+        setSection(section);
+      } else {
+        section.selected = false;
+      }
+      return section;
+    });
+    setSectionList(newArray);
+  };
 
-    const generateOrder = (data: Order) => {
-        router.push(`/${tenant}/finish/${data.hash}`)
-    }
-    const { isPending, isSuccess, mutate: mutateOrder } = api.menu.createOrder.useMutation({ onSuccess: generateOrder })
-    const changeSection = (id: number) => {
-        const newArray = sectionList.map(section => {
-            if (section.id == id) {
-                section.selected = true
-                if (sugested && sugestionValue) {
-                    mutate({ sugestionValue, sectionId: section.id, orgId })
-                }
-                setSection(section)
-            } else {
-                section.selected = false
-            }
-            return section
-        })
-        setSectionList(newArray)
-    }
+  const handleOpenCartModal = () => {
+    setOpenCart(true);
+  };
 
-    const handleOpenCartModal = () => {
-        setOpenCart(true)
-    }
+  const handleOpenSugestionModal = () => {
+    setOpenSugestion(!openSugestion);
+  };
 
-    const handleOpenSugestionModal = () => {
-        setOpenSugestion(!openSugestion)
+  const getProductSugestions = async () => {
+    if (!sugestionValue) {
+      alert("insira um valor");
     }
+    if (!sugestionValue) {
+      return;
+    }
+    mutate({ sugestionValue, sectionId: section.id, orgId });
+    setSugested(true);
+    setOpenSugestion(false);
+  };
 
-    const getProductSugestions = async () => {
-        if (!sugestionValue) {
-            alert("insira um valor")
+  const handlerCleanSugestion = () => {
+    setSugested(false);
+    setSugestionValue(undefined);
+    refetchGetProducts();
+  };
+
+  const setOpenAdditional = () => {
+    if (
+      productSelected?.obrigatoryAdditional &&
+      productSelected.additional?.length == 0
+    ) {
+      handlerRemoveProduct(productSelected);
+    }
+  };
+
+  const handlerAddProduct = (product: Product) => {
+    if (product.additional) {
+      setProductSelected(product);
+    }
+    let newArray = [...boughtProducts];
+    let hasProduct = false;
+    newArray = newArray.map((item) => {
+      if (item.id == product.id) {
+        item.quantity += 1;
+        hasProduct = true;
+      }
+      return item;
+    });
+    if (!hasProduct) {
+      const boughtProduct = { ...product };
+      boughtProduct.quantity += 1;
+      newArray.push(boughtProduct);
+    }
+    setQtdItens((value) => {
+      window.sessionStorage.setItem(
+        "bougthProductsTotal",
+        (value + 1).toString(),
+      );
+      return value + 1;
+    });
+    setBoughtProducts(newArray);
+    window.sessionStorage.setItem("bougthProducts", JSON.stringify(newArray));
+  };
+
+  const handlerRemoveProduct = (product: Product) => {
+    let newArray: (Product | null)[] = [...boughtProducts];
+    const newArrayProducts: Product[] = newArray
+      .map((item) => {
+        if (item && item.id == product.id && item.quantity > 0) {
+          item.quantity -= 1;
+          setQtdItens((value) => {
+            window.sessionStorage.setItem(
+              "bougthProductsTotal",
+              (value - 1).toString(),
+            );
+            return value - 1;
+          });
         }
-        if (!sugestionValue) {
-            return
+        if (!item || item.quantity == 0) {
+          return null;
         }
-        mutate({ sugestionValue, sectionId: section.id, orgId })
-        setSugested(true)
-        setOpenSugestion(false)
-    }
+        return item;
+      })
+      .filter((e) => e != null);
+    setBoughtProducts(newArrayProducts);
+    window.sessionStorage.setItem(
+      "bougthProducts",
+      JSON.stringify(boughtProducts),
+    );
+  };
 
-    const handlerCleanSugestion = () => {
-        setSugested(false)
-        setSugestionValue(undefined)
-        refetchGetProducts()
-    }
+  return (
+    <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
+      <Sections sections={sectionList} changeSection={changeSection} />
+      <div style={{ margin: "auto", maxWidth: "600px" }}>
+        {isPendingProducts ? (
+          <div className="w-100 mt-5 flex justify-center">
+            <Loading fontColor={fontColor} bgColor={bgColor} />
+          </div>
+        ) : sugested && dataSugested && dataSugested.products ? (
+          <>
+            <SugestedBadge
+              sugested={sugested}
+              onClose={handlerCleanSugestion}
+              length={dataSugested!.products.length}
+              value={dataSugested.totalSugested}
+            />
+            <Products
+              products={dataSugested.products}
+              onAddProduct={handlerAddProduct}
+              boughtProducts={boughtProducts}
+            />
+          </>
+        ) : (
+          <Products
+            boughtProducts={boughtProducts}
+            products={dataGetProducts}
+            onAddProduct={handlerAddProduct}
+          />
+        )}
+      </div>
 
-    const handlerAddProduct = (product: Product) => {
-        let newArray = [...boughtProducts]
-        let hasProduct = false
-        console.log('hanlder produtct', boughtProducts, newArray)
-        newArray = newArray.map(item => {
-            if (item.id == product.id) {
-                item.quantity += 1
-                hasProduct = true
-            }
-            return item
-        })
-        if (!hasProduct) {
-            const boughtProduct = { ...product }
-            boughtProduct.quantity += 1
-            newArray.push(boughtProduct)
-        }
-        setQtdItens((value) => {
-            window.localStorage.setItem('bougthProductsTotal', (value + 1).toString())
-            return value + 1
-        })
-        setBoughtProducts(newArray)
-        window.localStorage.setItem('bougthProducts', JSON.stringify(newArray))
-    }
-
-    const handlerRemoveProduct = (product: Product) => {
-        let newArray: (Product | null)[] = [...boughtProducts]
-        const newArrayProducts: Product[] = newArray.map(item => {
-            if (item && item.id == product.id && item.quantity > 0) {
-                item.quantity -= 1
-                setQtdItens((value) => {
-                    window.localStorage.setItem('bougthProductsTotal', (value - 1).toString())
-                    return value - 1
-                })
-            }
-            if (!item || item.quantity == 0) {
-                return null
-            }
-            return item
-        }).filter(e => e != null)
-        setBoughtProducts(newArrayProducts)
-        window.localStorage.setItem('bougthProducts', JSON.stringify(boughtProducts))
-    }
-
-    return (
-        <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
-            <Sections sections={sectionList} changeSection={changeSection} />
-            <div style={{ margin: "auto", maxWidth: "600px" }}>
-                {isPendingProducts ? <div className="w-100 mt-5 flex justify-center"><Loading fontColor={fontColor} bgColor={bgColor} /></div> :
-                    (sugested && dataSugested && dataSugested.products) ?
-                        <>
-                            <SugestedBadge sugested={sugested} onClose={handlerCleanSugestion} length={dataSugested!.products.length} value={dataSugested.totalSugested} />
-                            <Products products={dataSugested.products} onAddProduct={handlerAddProduct} boughtProducts={boughtProducts} />
-                        </>
-                        :
-                        <Products boughtProducts={boughtProducts} products={dataGetProducts} onAddProduct={handlerAddProduct} />
-                }
+      <FloatingButton bottomPosition="bottom-10">
+        <>
+          {boughtProducts.length > 0 && (
+            <div
+              style={{
+                marginLeft: "-10px",
+                marginBottom: "-20px",
+                zIndex: "10",
+              }}
+              className="rouded align-center relative flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white"
+            >
+              <span className="m-auto">{qtdItems}</span>
             </div>
+          )}
+          <button
+            onClick={handleOpenCartModal}
+            className="rounded-full bg-blue-500 px-4 py-2 font-bold text-white shadow-lg hover:bg-blue-600"
+          >
+            <p>Carrinho</p>
+          </button>
+        </>
+      </FloatingButton>
 
-            <FloatingButton bottomPosition="bottom-10" >
-                <>
-                    {boughtProducts.length > 0 && <div style={{ marginLeft: "-10px", marginBottom: "-20px", zIndex: "10" }} className="relative bg-red-500 text-white rouded rounded-full h-8 w-8 flex justify-center align-center items-center"><span className="m-auto">{qtdItems}</span></div>}
-                    <button onClick={handleOpenCartModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
-                        <p>Carrinho</p>
-                    </button>
-                </>
-            </FloatingButton >
-
-            {/* <FloatingButton bottomPosition="bottom-6" >
+      {/* <FloatingButton bottomPosition="bottom-6" >
                 <button onClick={handleOpenSugestionModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg" >
                     <p>Sugestão $$</p>
                 </button>
             </FloatingButton > */}
 
-            <SugestionModal
-                open={openSugestion}
-                onOpenChange={setOpenSugestion}
-                description="Insira um valor que iremos te sugerir opções aproximadas desse valor"
-                title="Até quanto você pretende gastar?"
-                saveButton={<>
-                    <Button variant="outline" onClick={(e) => getProductSugestions()}>
-                        Filtrar produtos
-                    </Button>
-                </>}
-            >
-                <>
-                    <Label htmlFor="sugestionValue" className="text-left">
-                        Valor em Reais:
-                    </Label>
-                    <Input
-                        type="number"
-                        placeholder="20"
-                        onChange={(e) => setSugestionValue(Number(e.target.value))}
-                        id="sugestionValue"
-                    />
-                </>
-            </SugestionModal>
-            <CartModal
-                open={openCart}
-                onOpenChange={(value) => {
-                    if (!isPending)
-                        setOpenCart(value)
-                }}
-                description="Assim que confirmar, basta fechar o pedido"
-                title="Aqui está seus itens"
-                saveButton={<>
-                    {isPending || isSuccess ?
-                        <div className="w-100 flex justify-center"><Loading /></div>
-                        : <>
-                            <Button className="mb-2" variant="outline" onClick={(e) => {
-                                setBoughtProducts([])
-                                setQtdItens(0)
-                                window.localStorage.clear()
-                                setOpenCart(false)
-                            }}>
-                                Limpar carrinho
-                            </Button>
-                            <Button variant="outline" onClick={(e) =>
-                                mutateOrder({ products: boughtProducts.map(b => ({ id: b.id, qtd: b.quantity })), orgId, name: "CLIENTE NAO FINALIZADO" })
-                            }>
-                                Fechar pedido
-                            </Button>
-                        </>
-
-                    }
-                    {boughtProducts.length > 0 && <p className="my-2">Total: R$ {boughtProducts.map(b => (b.value * b.quantity)).reduce((previous, current) => previous + current).toFixed(2).replace(".", ",")}</p>}
-                </>}
-            >
-                <>
-                    {boughtProducts.map((item, i) => <p className="my-4 truncate ">
-                        <span className="cursor-pointer font-lg p-4" onClick={() => handlerRemoveProduct(item)}>-</span>
-                        {item.quantity}
-                        <span className="cursor-pointer font-lg p-4" onClick={() => handlerAddProduct(item)}>+</span>
-                        [R$ {(item.value).toFixed(2).replace(".", ",")}]
-                        {"  "}
-                        {item.title}
-                        {"  "}
-                    </p>)}
-                </>
-            </CartModal >
-        </ThemeProvider >
-    )
-
+      <SugestionModal
+        open={openSugestion}
+        onOpenChange={setOpenSugestion}
+        description="Insira um valor que iremos te sugerir opções aproximadas desse valor"
+        title="Até quanto você pretende gastar?"
+        saveButton={
+          <>
+            <Button variant="outline" onClick={(e) => getProductSugestions()}>
+              Filtrar produtos
+            </Button>
+          </>
+        }
+      >
+        <>
+          <Label htmlFor="sugestionValue" className="text-left">
+            Valor em Reais:
+          </Label>
+          <Input
+            type="number"
+            placeholder="20"
+            onChange={(e) => setSugestionValue(Number(e.target.value))}
+            id="sugestionValue"
+          />
+        </>
+      </SugestionModal>
+      <CartModal
+        open={openCart}
+        onOpenChange={(value) => {
+          if (!isPending) setOpenCart(value);
+        }}
+        description="Assim que confirmar, basta fechar o pedido"
+        title="Aqui está seus itens"
+        saveButton={
+          <>
+            {isPending || isSuccess ? (
+              <div className="w-100 flex justify-center">
+                <Loading />
+              </div>
+            ) : (
+              <>
+                <Button
+                  className="mb-2"
+                  variant="outline"
+                  onClick={(e) => {
+                    setBoughtProducts([]);
+                    setQtdItens(0);
+                    window.sessionStorage.clear();
+                    setOpenCart(false);
+                  }}
+                >
+                  Limpar carrinho
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={(e) =>
+                    mutateOrder({
+                      products: boughtProducts.map((b) => ({
+                        id: b.id,
+                        qtd: b.quantity,
+                      })),
+                      orgId,
+                      name: "CLIENTE NAO FINALIZADO",
+                    })
+                  }
+                >
+                  Fechar pedido
+                </Button>
+              </>
+            )}
+            {boughtProducts.length > 0 && (
+              <p className="my-2">
+                Total: R${" "}
+                {boughtProducts
+                  .map((b) => b.value * b.quantity)
+                  .reduce((previous, current) => previous + current)
+                  .toFixed(2)
+                  .replace(".", ",")}
+              </p>
+            )}
+          </>
+        }
+      >
+        <>
+          {boughtProducts.map((item, i) => (
+            <p className="my-4 truncate">
+              <span
+                className="font-lg cursor-pointer p-4"
+                onClick={() => handlerRemoveProduct(item)}
+              >
+                -
+              </span>
+              {item.quantity}
+              <span
+                className="font-lg cursor-pointer p-4"
+                onClick={() => handlerAddProduct(item)}
+              >
+                +
+              </span>
+              [R$ {item.value.toFixed(2).replace(".", ",")}]{"  "}
+              {item.title}
+              {"  "}
+            </p>
+          ))}
+        </>
+      </CartModal>
+      <AdditionalModal
+        open={Boolean(productSelected)}
+        onOpenChange={setOpenAdditional}
+        description="Insira um valor que iremos te sugerir opções aproximadas desse valor"
+        title="Até quanto você pretende gastar?"
+        saveButton={
+          <>
+            <Button variant="outline" onClick={(e) => getProductSugestions()}>
+              Filtrar produtos
+            </Button>
+          </>
+        }
+      >
+        <>
+          {isPendingAdditional ? (
+            <Loading />
+          ) : (
+            <>{dataGetAdditional.map((additional) => additional)}</>
+          )}
+        </>
+      </AdditionalModal>
+    </ThemeProvider>
+  );
 }
