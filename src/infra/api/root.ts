@@ -1,6 +1,6 @@
-import { menuRouter } from "~/server/api/routers/menu";
-import { orgRouter } from "~/server/api/routers/org";
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { menuRouter } from "~/infra/api/routers/menu";
+import { orgRouter } from "~/infra/api/routers/org";
+import { createCallerFactory, createTRPCRouter } from "~/infra/api/trpc";
 import { sectionRouter } from "./routers/section";
 import { orderRouter } from "./routers/order";
 export const appRouter = createTRPCRouter({

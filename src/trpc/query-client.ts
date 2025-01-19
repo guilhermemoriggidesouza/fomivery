@@ -22,7 +22,7 @@ export const createQueryClient = () =>
     },
   });
 
-export const noReLoading = {
+export const noReLoading: any = {
   retryOnMount: false,
   refetchOnMount: false,
   refetchOnReconnect: false,

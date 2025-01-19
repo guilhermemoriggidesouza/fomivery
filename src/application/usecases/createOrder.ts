@@ -1,10 +1,21 @@
-import Product from "~/domain/product";
 import OrderRepository from "../repositories/order";
 import Order from "~/domain/order";
-import ProductRepository from "../repositories/product";
+import AdditionalRepository from "../repositories/additional";
+import { BoughtProduct } from "~/domain/product";
+import { Additional } from "~/domain/additional";
 
 export type inputDTO = {
-  products: { id: number; qtd: number }[];
+  products: {
+    id: number;
+    hash: string;
+    title: string;
+    value?: number;
+    orgId: number;
+    obrigatoryAdditional: boolean;
+    quantity: number;
+    price?: number;
+    additionals?: { id: number; ownerId: number; hash: string }[];
+  }[];
   orgId: number;
   name?: string;
   telephone?: string;
@@ -14,20 +25,26 @@ export type inputDTO = {
 export default class CreatOrderUseCase {
   constructor(
     private readonly orderRepository: OrderRepository,
-    private readonly productRepository: ProductRepository,
+    private readonly additionalRepository: AdditionalRepository,
   ) {}
 
   async execute(input: inputDTO): Promise<Order> {
-    const products = await this.productRepository.findByIds(
-      input.products.map((p) => p.id),
+    const products = await Promise.all(
+      input.products.map(async (product) => {
+        let additional: Additional[] = [];
+        if (product.additionals) {
+          additional = await this.additionalRepository.findAdditionalsById(
+            product.additionals,
+          );
+        }
+        const boughtProduct = new BoughtProduct({ ...product, additional });
+        boughtProduct.hash = product.hash;
+        boughtProduct.price = product.price;
+        boughtProduct.quantity = product.quantity;
+        boughtProduct.additional = additional;
+        return boughtProduct;
+      }),
     );
-    const flatIdsQtd = input.products.reduce((previous: any, current: any) => {
-      previous[current.id] = current.qtd;
-      return previous;
-    }, {});
-    products.map((p) => {
-      p.quantity = flatIdsQtd[p.id];
-    });
     const orderToCreate = Order.createDomain(
       products,
       input.orgId,

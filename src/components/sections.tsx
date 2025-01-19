@@ -8,8 +8,8 @@ export type SectionsProps = {
   changeSection: (id: number) => void;
 };
 export default function Sections({ sections, changeSection }: SectionsProps) {
-  const refli = useRef<HTMLLIElement | null>(null);
-  const reful = useRef<HTMLUListElement | null>(null);
+  const refli = useRef<HTMLLIElement>(null);
+  const reful = useRef<HTMLUListElement>(null);
   const {
     theme: { bgColor, fontColor },
   } = useContext(ThemeContext);

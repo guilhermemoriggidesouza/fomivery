@@ -13,6 +13,8 @@ export default class GetAdditional {
       await this.additionalRepository.findAdditionalByProductById(
         input.productId,
       );
-    return additional;
+    const additionalSections =
+      AdditionalSection.transformAdditional(additional);
+    return additionalSections;
   }
 }

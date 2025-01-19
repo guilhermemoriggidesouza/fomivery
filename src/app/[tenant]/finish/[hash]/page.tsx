@@ -1,9 +1,9 @@
 import { api } from "~/trpc/server";
 import NotFound from "~/components/notFound";
 import OrderFinish from "~/components/orderFinish";
-import Product from "~/domain/product";
+import { BoughtProductType } from "~/domain/product";
 import { OrderType } from "~/domain/order";
-import Org from "~/domain/org";
+import { OrgType } from "~/domain/org";
 
 export default async function Finish({
   params,
@@ -15,9 +15,8 @@ export default async function Finish({
     return <NotFound />;
   }
   const dataOrder = await api.order.getOrder({ hash: params.hash });
-  dataOrder.products = dataOrder.products.map((p: Product) => ({ ...p }));
-  const order = { ...dataOrder } as OrderType;
-  const org = { ...dataOrg } as Org;
+  const order = JSON.parse(JSON.stringify(dataOrder)) as OrderType;
+  const org = { ...dataOrg } as OrgType;
   return (
     <main
       style={{

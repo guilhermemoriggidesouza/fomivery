@@ -5,7 +5,7 @@ export default function Back() {
 
   return (
     <a
-      className="h-5 w-5 p-1"
+      className="h-5 w-5 p-1 cursor-pointer hover:scale-75"
       onClick={() => {
         router.back();
       }}

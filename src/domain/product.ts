@@ -1,17 +1,121 @@
-import { Additional } from "./additional";
-
+import { v4 } from "uuid";
+import { Additional, AdditionalType } from "./additional";
+export type ProductType = {
+  id: number;
+  title: string;
+  orgId: number;
+  boolean?: boolean;
+  value?: number;
+  sectionId?: number;
+  adictionalSectionId?: number;
+  description?: string;
+  image?: string;
+  hasAdditional?: boolean;
+  additional?: Additional[];
+};
 export default class Product {
   constructor(
     public readonly id: number,
     public readonly title: string,
-    public readonly value: number,
     public readonly orgId: number,
     public readonly obrigatoryAdditional: boolean = false,
-    public readonly sectionId?: number | null,
-    public readonly description?: string | null,
-    public readonly image?: string | null,
-    public quantity: number = 0,
-    public readonly hasAdditional: boolean = false,
-    public readonly additional?: Additional[],
+    public value?: number,
+    public readonly sectionId?: number,
+    public readonly adictionalSectionId?: number,
+    public readonly description?: string,
+    public readonly image?: string,
+    public readonly hasAdditional?: boolean,
+    public additional?: Additional[],
   ) {}
+}
+
+export type BoughtProductType = {
+  id: number;
+  title: string;
+  orgId: number;
+  obrigatoryAdditional: boolean;
+  value?: number;
+  sectionId?: number;
+  adictionalSectionId?: number;
+  description?: string;
+  image?: string;
+  hasAdditional?: boolean;
+  additional?: AdditionalType[];
+  price?: number;
+  hash?: string;
+  quantity: number;
+};
+
+export class BoughtProduct extends Product {
+  price?: number = 0;
+  hash?: string;
+  quantity: number = 0;
+
+  constructor(product: Product) {
+    super(
+      product.id,
+      product.title,
+      product.orgId,
+      product.obrigatoryAdditional,
+      product.value,
+      product.sectionId,
+      product.adictionalSectionId,
+      product.description,
+      product.image,
+      product.hasAdditional,
+      product.additional,
+    );
+    this.hash = v4();
+    if (product.additional && product.additional.length > 0) {
+      const valuesAditional = product.additional
+        ?.map((p) => p.product.value ?? 0)
+        .filter((e) => e != undefined);
+      this.price =
+        (product.value ?? 0) +
+        valuesAditional?.reduce((acc, next) => acc + next, 0);
+    } else {
+      this.price = product.value ?? 0;
+    }
+  }
+
+  reCalculate() {
+    const valuesAditional = this.additional?.map((p) => p.product.value ?? 0);
+    this.price =
+      (this.value ?? 0) +
+      ((valuesAditional &&
+        valuesAditional?.reduce((acc, next) => acc + next)) ??
+        0);
+  }
+
+  static create(
+    productFromDb: {
+      value: number | null;
+      id: number;
+      title: string;
+      description: string | null;
+      image: string | null;
+      section_id: number | null;
+      org_id: number;
+      additional_section_id: number | null;
+      obrigatory_additional: boolean | null;
+    },
+    hash?: string,
+  ) {
+    const product = new Product(
+      productFromDb.id ?? undefined,
+      productFromDb.title,
+      productFromDb.org_id,
+      productFromDb.obrigatory_additional ?? undefined,
+      productFromDb.value ?? undefined,
+      productFromDb.section_id ?? undefined,
+      productFromDb.additional_section_id ?? undefined,
+      productFromDb.description ?? undefined,
+      productFromDb.image ?? undefined,
+    );
+    const boughtProduct = new BoughtProduct(product);
+    if (hash) {
+      boughtProduct.hash = hash;
+    }
+    return boughtProduct;
+  }
 }

@@ -6,7 +6,7 @@ import GetOrder from "~/application/usecases/getOrder";
 import OrderRepositoryImp from "~/infra/repositories/order.imp";
 import OrgRepositoryImp from "~/infra/repositories/org.imp";
 
-import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
+import { createTRPCRouter, publicRoute } from "~/infra/api/trpc";
 
 export const orderRouter = createTRPCRouter({
   getOrder: publicRoute

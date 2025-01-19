@@ -10,8 +10,8 @@ export class FuckingHashTreeSearchable {
     const total = item?.total || 0;
     const node = new Node(
       product.id,
-      product.value,
-      product.value + total,
+      product.value!,
+      product.value! + total,
       sequencyIds,
     );
     return node;

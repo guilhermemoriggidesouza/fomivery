@@ -2,7 +2,7 @@ import { z } from "zod";
 import GetOrg from "~/application/usecases/getOrg";
 import OrgRepositoryImp from "~/infra/repositories/org.imp";
 
-import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
+import { createTRPCRouter, publicRoute } from "~/infra/api/trpc";
 
 export const orgRouter = createTRPCRouter({
   getOrg: publicRoute

@@ -2,7 +2,7 @@ import { z } from "zod";
 import GetSection from "~/application/usecases/getSections";
 import SectionRepositoryImp from "~/infra/repositories/section.imp";
 
-import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
+import { createTRPCRouter, publicRoute } from "~/infra/api/trpc";
 
 export const sectionRouter = createTRPCRouter({
   getSection: publicRoute

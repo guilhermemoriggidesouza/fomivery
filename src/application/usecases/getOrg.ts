@@ -8,8 +8,11 @@ export type inputDTO = {
 export default class GetOrg {
   constructor(private readonly orgRepository: OrgRepository) {}
 
-  async execute(input: inputDTO): Promise<Org | null> {
+  async execute(input: inputDTO): Promise<Org> {
     const org = await this.orgRepository.findByTenant(input.tenant);
+    if (!org) {
+      throw new Error("Org error");
+    }
     return org;
   }
 }

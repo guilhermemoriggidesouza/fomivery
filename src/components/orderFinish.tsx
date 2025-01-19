@@ -6,8 +6,8 @@ import Back from "./ui/back";
 import { Button } from "./ui/button";
 import { UserInfosModal } from "./modal/userInfos";
 import { useState } from "react";
-import Product from "~/domain/product";
-import Org from "~/domain/org";
+import { BoughtProductType } from "~/domain/product";
+import Org, { OrgType } from "~/domain/org";
 import { api } from "~/trpc/react";
 import { FormUserInfo, FormUserInfoType } from "./formUserInfo";
 import { telephoneMask } from "./ui/utils";
@@ -17,7 +17,7 @@ export type OrderFinishProps = {
   orderFirst: OrderType;
   bgColor: string;
   fontColor: string;
-  org: Org;
+  org: OrgType;
 };
 export default function OrderFinish({
   orderFirst,
@@ -83,8 +83,12 @@ export default function OrderFinish({
       return;
     }
     const listProducts = order.products.reduce(
-      (previous: string, current: Product) => {
+      (previous: string, current: BoughtProductType) => {
         previous += `- *${current.quantity}x ${current.title}*%0A`;
+        if (current.additional && current.additional.length > 0) {
+          previous += "*Com adição de:*%0A";
+          previous += `${current.additional?.map((add) => `      - ${add.product.title}`).join("%0A")}%0A`;
+        }
         return previous;
       },
       "",
@@ -162,19 +166,28 @@ export default function OrderFinish({
         </div>
 
         <hr />
-        <div className="mx-4 max-h-[70%] overflow-y-auto">
+        <div className="m-4 max-h-[70%] overflow-y-auto truncate text-left">
           {order.products.map((item, i) => (
-            <p key={i} className="text-md my-4 truncate text-left">
-              {item.quantity}x [R$ {item.value.toFixed(2).replace(".", ",")}]
-              {"  "}
-              {item.title}
-              {"  "}
-            </p>
+            <>
+              <p key={i} className="text-md mt-4">
+                {item.quantity} x
+                {item.price &&
+                  ` [R$ ${item.price!.toFixed(2).replace(".", ",")}] `}
+                {item.title}
+              </p>
+              {item.additional?.map((add, i) => (
+                <p key={i} className="ml-10">
+                  {add.product.value &&
+                    ` + [R$ ${add.product.value!.toFixed(2).replace(".", ",")}] `}
+                  {add.product.title}
+                </p>
+              ))}
+            </>
           ))}
         </div>
         <hr />
         <p className="mt-4">
-          Total produtos: R${" "}
+          Total produtos: R$
           {getProductValue(order).toFixed(2).replace(".", ",")}
         </p>
         {order.tax && (
@@ -190,7 +203,7 @@ export default function OrderFinish({
               </div>
               <p className="w-full text-center">
                 <i>
-                  caso tenha uma duvida, basta entrar em contato no número:{" "}
+                  caso tenha uma duvida, basta entrar em contato no número:
                   {telephoneMask(org.telephone)}
                 </i>
               </p>
@@ -216,7 +229,7 @@ export default function OrderFinish({
           <div className="text-center">
             <p>
               <strong className="text-blue-500">
-                TOTAL PEDIDO: R${" "}
+                TOTAL PEDIDO: R$
                 {getTotalValue(order).toFixed(2).replace(".", ",")}
               </strong>
               <br />
@@ -239,7 +252,7 @@ export default function OrderFinish({
               };
             });
           }}
-          org={org}
+          org={org as Org}
           payload={payload}
         />
       </UserInfosModal>

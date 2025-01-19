@@ -1,0 +1,1 @@
+ALTER TABLE `order_product` ALTER COLUMN "price" TO "price" real;

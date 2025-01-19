@@ -18,8 +18,13 @@ export default function Products({
   const [imageModal, setImageModal] = useState<any | undefined>();
 
   const getQtdBougth = (product: ProductDomain) => {
-    const bougthProduct = boughtProducts?.find((bp) => bp.id == product.id);
-    return bougthProduct?.quantity;
+    let bougthProduct = 0;
+    boughtProducts?.forEach((bp) => {
+      if (bp.id == product.id) {
+        bougthProduct += bp.quantity!;
+      }
+    });
+    return bougthProduct;
   };
   return (
     <>
@@ -42,7 +47,7 @@ export default function Products({
       </ul>
       <ImageModal
         open={imageModal}
-        title={`${imageModal?.title}, ${imageModal?.value}`}
+        title={`${imageModal?.title}, ${imageModal?.price}`}
         description={imageModal?.description}
         onOpenChange={() => setImageModal(undefined)}
       >

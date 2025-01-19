@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import SectionRepository from "~/application/repositories/section";
 import Section from "~/domain/section";
-import { db } from "~/server/db";
+import { db } from "~/infra/db";
 import { sectionTable } from "~/server/db/schema";
 
 export default class SectionRepositoryImp implements SectionRepository {

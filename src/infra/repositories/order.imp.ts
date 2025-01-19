@@ -1,8 +1,9 @@
 import { eq } from "drizzle-orm";
 import orderRepository from "~/application/repositories/order";
+import { Additional } from "~/domain/additional";
 import Order from "~/domain/order";
-import Product from "~/domain/product";
-import { db } from "~/server/db";
+import Product, { BoughtProduct } from "~/domain/product";
+import { db } from "~/infra/db";
 import { orderProdTable, orderTable, productTable } from "~/server/db/schema";
 
 export default class OrderRepositoryImp implements orderRepository {
@@ -25,25 +26,43 @@ export default class OrderRepositoryImp implements orderRepository {
       .where(eq(orderTable.id, order.id!));
   }
 
-  insertProducts(
-    products: Product[],
+  createProductsValues(
+    products: BoughtProduct[],
     orderId: number,
     orgId: number,
   ): {
     product_id: number;
     order_id: number;
     org_id: number;
+    price?: number;
     qtd_product: number;
+    hash_id?: string;
+    product_id_owner?: number;
   }[] {
-    return products.map((p) => ({
+    const productsMapper = products.map((p) => ({
       product_id: p.id,
       order_id: orderId,
+      hash_id: p.hash!,
       org_id: orgId,
+      price: p.price,
       qtd_product: p.quantity!,
     }));
+
+    const additionalMapper = Array.from(
+      products.flatMap((p) => p.additional!),
+    ).map((additional: Additional) => ({
+      product_id: additional.product.id,
+      order_id: orderId,
+      org_id: orgId,
+      hash_id: additional.productOwner.hash!,
+      price: additional.product.value,
+      product_id_owner: additional.productOwner.id,
+      qtd_product: 1,
+    }));
+    return productsMapper.concat(additionalMapper);
   }
 
-  async findByHash(orderHash: string): Promise<Order | null> {
+  async findByHash(orderHash: string): Promise<Order | undefined> {
     const orderRecovery = await db
       .select()
       .from(orderTable)
@@ -53,27 +72,65 @@ export default class OrderRepositoryImp implements orderRepository {
       .all();
     const [order] = [...orderRecovery];
     if (!order) {
-      return null;
+      return;
     }
-    const orderDomain = Order.toDomain(order.order);
-    orderDomain.products = orderRecovery.map(
-      (op) =>
-        new Product(
-          op.product!.id,
-          op.product!.title,
-          op.product!.value,
-          op.product!.org_id,
-          op.product!.obrigatory_additional ?? false,
-          op.product!.section_id,
-          op.product!.description,
-          op.product!.image,
-          op.order_product!.qtd_product,
-        ),
+    const products: BoughtProduct[] = [];
+    const orderDomain = new Order(
+      order.order.total,
+      order.order.hash,
+      order.order.org_id,
+      products,
+      order.order.delivery,
+      order.order.name ?? undefined,
+      order.order.email ?? undefined,
+      order.order.telephone ?? undefined,
+      order.order.created_at ?? undefined,
+      order.order.finish_at ?? undefined,
+      order.order.obs ?? undefined,
+      order.order.payment_type ?? undefined,
+      order.order.change_payment ?? undefined,
+      order.order.id ?? undefined,
+      order.order.address ?? undefined,
+      order.order.tax ?? undefined,
     );
+    orderDomain.products = orderRecovery
+      .map((op) => {
+        if (!op.order_product!.product_id_owner) {
+          const boughtProduct = BoughtProduct.create(op.product!);
+          boughtProduct.price = op.order_product!.price ?? undefined;
+          boughtProduct.hash = op.order_product!.hash_id!;
+          boughtProduct.quantity = op.order_product!.qtd_product;
+          return boughtProduct;
+        }
+      })
+      .filter((e) => e != undefined);
+    const additionals = orderRecovery
+      .filter((op) => op.order_product!.product_id_owner)
+      .map((additional) => {
+        const productOwner = orderDomain.products.find(
+          (prod) => prod.id == additional.order_product?.product_id_owner,
+        );
+        const productAdditional = new Product(
+          additional.product!.id,
+          additional.product!.title,
+          additional.product!.org_id,
+          additional.product!.obrigatory_additional ?? false,
+          additional.product!.value ?? undefined,
+          additional.product!.section_id ?? undefined,
+          additional.product!.additional_section_id ?? undefined,
+          additional.product!.description ?? undefined,
+          additional.product!.image ?? undefined,
+        );
+        return new Additional(
+          { id: productOwner!.id, hash: productOwner!.hash },
+          productAdditional,
+        );
+      });
+    orderDomain.setAdditionalsToProduct(additionals);
     return orderDomain;
   }
 
-  async create(order: Order): Promise<Order | null> {
+  async create(order: Order): Promise<Order | undefined> {
     const [orderCreated] = await db
       .insert(orderTable)
       .values({
@@ -89,11 +146,30 @@ export default class OrderRepositoryImp implements orderRepository {
       })
       .returning();
     if (!orderCreated) {
-      return null;
+      return;
     }
-    const orderDomainCreated = Order.toDomain(orderCreated);
-    const orderProd = this.insertProducts(
-      order.products,
+
+    const products: BoughtProduct[] = [];
+    const orderDomainCreated = new Order(
+      orderCreated.total,
+      orderCreated.hash,
+      orderCreated.org_id,
+      products,
+      orderCreated.delivery,
+      orderCreated.name ?? undefined,
+      orderCreated.email ?? undefined,
+      orderCreated.telephone ?? undefined,
+      orderCreated.created_at ?? undefined,
+      orderCreated.finish_at ?? undefined,
+      orderCreated.obs ?? undefined,
+      orderCreated.payment_type ?? undefined,
+      orderCreated.change_payment ?? undefined,
+      orderCreated.id ?? undefined,
+      orderCreated.address ?? undefined,
+      orderCreated.tax ?? undefined,
+    );
+    const orderProd = this.createProductsValues(
+      order.products as BoughtProduct[],
       orderDomainCreated.id!,
       orderDomainCreated.orgId,
     );

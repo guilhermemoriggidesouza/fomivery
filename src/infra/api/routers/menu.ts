@@ -7,7 +7,7 @@ import AdditionalRepositoryImp from "~/infra/repositories/additional.imp";
 import OrderRepositoryImp from "~/infra/repositories/order.imp";
 import ProductRepositoryImp from "~/infra/repositories/product.imp";
 
-import { createTRPCRouter, publicRoute } from "~/server/api/trpc";
+import { createTRPCRouter, publicRoute } from "~/infra/api/trpc";
 
 export const menuRouter = createTRPCRouter({
   createSugestion: publicRoute
@@ -45,7 +45,27 @@ export const menuRouter = createTRPCRouter({
   createOrder: publicRoute
     .input(
       z.object({
-        products: z.array(z.object({ id: z.number(), qtd: z.number() })),
+        products: z.array(
+          z.object({
+            id: z.number(),
+            hash: z.string(),
+            title: z.string(),
+            value: z.number().optional(),
+            orgId: z.number(),
+            obrigatoryAdditional: z.boolean(),
+            quantity: z.number(),
+            price: z.number().optional(),
+            additionals: z
+              .array(
+                z.object({
+                  id: z.number(),
+                  ownerId: z.number(),
+                  hash: z.string(),
+                }),
+              )
+              .optional(),
+          }),
+        ),
         name: z.string(),
         orgId: z.number(),
         telephone: z.string().optional(),
@@ -54,11 +74,11 @@ export const menuRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const orderRepository = new OrderRepositoryImp();
-      const productRepository = new ProductRepositoryImp();
+      const additionalRepository = new AdditionalRepositoryImp();
 
       const createOrder = new CreatOrderUseCase(
         orderRepository,
-        productRepository,
+        additionalRepository,
       );
       const order = await createOrder.execute(input);
       return order;

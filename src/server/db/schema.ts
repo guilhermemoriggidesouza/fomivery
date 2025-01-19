@@ -56,13 +56,14 @@ export const additionalSectionTable = sqliteTable("additional_section", {
     .notNull()
     .references(() => orgTable.id),
   max_per_additional: integer("max_per_additional"),
+  min_per_additional: integer("min_per_additional"),
 });
 
 export const productTable = sqliteTable("product", {
   id: integer("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
-  value: real("value").notNull(),
+  value: real("value"),
   image: text("image"),
   section_id: integer("section_id").references(() => sectionTable.id),
   additional_section_id: integer("additional_section_id").references(
@@ -76,6 +77,7 @@ export const productTable = sqliteTable("product", {
 
 export const orderProdTable = sqliteTable("order_product", {
   id: integer("id").primaryKey(),
+  hash_id: text("hash_id"),
   org_id: integer("org_id")
     .notNull()
     .references(() => orgTable.id),
@@ -86,6 +88,7 @@ export const orderProdTable = sqliteTable("order_product", {
     () => productTable.id,
   ),
   qtd_product: integer("qtd_product").notNull(),
+  price: real("price"),
   order_id: integer("order_id")
     .notNull()
     .references(() => orderTable.id),

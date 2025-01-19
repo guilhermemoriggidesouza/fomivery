@@ -44,7 +44,7 @@ export default function Product({
                     image,
                     title,
                     description,
-                    value: `R$ ${value.toFixed(2).replace(".", ",")}`,
+                    value: value && `R$ ${value.toFixed(2).replace(".", ",")}`,
                   });
                   e.stopPropagation();
                 }}
@@ -57,11 +57,13 @@ export default function Product({
               </div>
             )}
             <div className={`${image && "ml-2"} w-full`}>
-              <div className="flex items-center justify-start">
-                <span className="inline-block text-nowrap">
-                  R$ {value.toFixed(2).replace(".", ",")}
-                </span>
-              </div>
+              {value && (
+                <div className="flex items-center justify-start">
+                  <span className="inline-block text-nowrap">
+                    R$ {value.toFixed(2).replace(".", ",")}
+                  </span>
+                </div>
+              )}
               <p className="line-clamp-2">{description}</p>
             </div>
           </div>

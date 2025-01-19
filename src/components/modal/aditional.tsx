@@ -2,7 +2,6 @@ import { Dispatch, ReactElement, SetStateAction } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -11,7 +10,6 @@ import {
 export type CartProps = {
   children: ReactElement;
   title: string;
-  description: string;
   open: boolean;
   saveButton: ReactElement;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
@@ -19,7 +17,6 @@ export type CartProps = {
 
 export function AdditionalModal({
   title,
-  description,
   children,
   open,
   saveButton,
@@ -30,7 +27,6 @@ export function AdditionalModal({
       <DialogContent className="h-max-screen flex flex-col bg-white">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="h-max-[400px] overflow-y-auto">{children}</div>
         <DialogFooter>{saveButton}</DialogFooter>
