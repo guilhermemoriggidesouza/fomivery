@@ -72,7 +72,7 @@ export const AdditionalSection = ({
                   ? `[R$ ${additional.product.value?.toFixed(2).replaceAll(".", ",")}]`
                   : ""}
               </span>
-              <div className="block">
+              <div className="block ml-4">
                 <p>{additional.product.title}</p>
                 {additional.product.description && (
                   <i>
