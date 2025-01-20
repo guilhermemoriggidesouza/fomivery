@@ -72,7 +72,14 @@ export const AdditionalSection = ({
                   ? `[R$ ${additional.product.value?.toFixed(2).replaceAll(".", ",")}]`
                   : ""}
               </span>
-              <span>{additional.product.title}</span>
+              <div className="block">
+                <p>{additional.product.title}</p>
+                {additional.product.description && (
+                  <i>
+                    <small>{additional.product.description}</small>
+                  </i>
+                )}
+              </div>
             </Label>
           </div>
           <hr />
