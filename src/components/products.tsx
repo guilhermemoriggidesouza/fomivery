@@ -1,12 +1,12 @@
 "use client";
-import ProductDomain from "~/domain/product";
+import ProductDomain, { BoughtProductType } from "~/domain/product";
 import Product from "./product";
 import { useState } from "react";
 import { ImageModal } from "./modal/image";
 import { title } from "process";
 export type ProductsProps = {
   products: ProductDomain[];
-  boughtProducts?: ProductDomain[];
+  boughtProducts?: BoughtProductType[];
   onAddProduct: (p: ProductDomain) => void;
 };
 
@@ -17,8 +17,11 @@ export default function Products({
 }: ProductsProps) {
   const [imageModal, setImageModal] = useState<any | undefined>();
 
-  const getQtdBougth = (product: ProductDomain) => {
+  const getQtdBougth = (product?: BoughtProductType) => {
     let bougthProduct = 0;
+    if (!product) {
+      return 0;
+    }
     boughtProducts?.forEach((bp) => {
       if (bp.id == product.id) {
         bougthProduct += bp.quantity!;
@@ -30,13 +33,16 @@ export default function Products({
     <>
       <ul className="list-none first:pt-4">
         {products.map((product: ProductDomain) => {
+          const bougthProduct = boughtProducts?.find(
+            (bp) => bp.id == product.id,
+          );
           return (
             <Product
               key={product.id}
               {...product}
               onClick={(e) => onAddProduct(product)}
               onClickImage={(product) => setImageModal(product)}
-              qtdBougth={getQtdBougth(product)}
+              qtdBougth={getQtdBougth(bougthProduct)}
             />
           );
         })}
