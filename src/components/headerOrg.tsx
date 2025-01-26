@@ -7,7 +7,7 @@ export type HeaderOrgProps = {
 export default function HeaderOrg({ org, url }: HeaderOrgProps) {
   return (
     <>
-      <div className="w-full" style={{ backgroundColor: org.bgColor }}>
+      <div className="w-full z-50 relative" style={{ backgroundColor: org.bgColor }}>
         <div className="flex items-center p-4">
           <div className="h-[60px] w-[60px] shrink-0 grow-0">
             {org.icon && (

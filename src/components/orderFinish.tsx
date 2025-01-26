@@ -143,26 +143,21 @@ export default function OrderFinish({
   return (
     <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
       <div
-        className="blockquote animate__slideInDown animate__animated mx-4 mb-4 h-[95%] sm:m-auto"
+        className="blockquote animate__slideInDown animate__animated mx-4 mb-4 sm:m-auto"
         style={{
+          maxWidth: "600px",
           color: fontColor,
           backgroundColor: bgColor,
-          maxWidth: "600px",
         }}
       >
         <div className="flex">
           <Back />
-          {order.finishAt ? (
-            <p className="mb-2 ml-4 text-xl">
-              <strong>
-                Total do pedido: R$ {order.total.toFixed(2).replace(".", ",")}
-              </strong>
-            </p>
-          ) : (
-            <p className="mb-2 ml-4 text-xl">
-              <strong>Confira abaixo seu pedido</strong>
-            </p>
-          )}
+          <p className="mb-2 ml-4 text-xl">
+            <strong>
+              TOTAL PEDIDO: R$
+              {getTotalValue(order).toFixed(2).replace(".", ",")}
+            </strong>
+          </p>
         </div>
 
         <hr />
@@ -171,8 +166,8 @@ export default function OrderFinish({
             <>
               <p key={i} className="text-md mt-4">
                 {item.quantity} x
-                {item.price &&
-                  ` [R$ ${item.price!.toFixed(2).replace(".", ",")}] `}
+                {item.value &&
+                  ` [R$ ${item.value!.toFixed(2).replace(".", ",")}] `}
                 {item.title}
               </p>
               {item.additional?.map((add, i) => (
@@ -219,6 +214,13 @@ export default function OrderFinish({
             </button>
           )}
         </div>
+        <div
+          className="blockquote-after"
+          style={{
+            background:
+              `linear-gradient(-45deg, transparent 70%, ${bgColor} 75%),linear-gradient( 45deg, transparent 70%, ${bgColor} 75%);`,
+          }}
+        ></div>
       </div>
       <UserInfosModal
         open={openUserInfos}
@@ -228,10 +230,6 @@ export default function OrderFinish({
         saveButton={
           <div className="text-center">
             <p>
-              <strong className="text-blue-500">
-                TOTAL PEDIDO: R$
-                {getTotalValue(order).toFixed(2).replace(".", ",")}
-              </strong>
               <br />
               <i>O valor do pedido deve ser pago na entrega</i>
             </p>

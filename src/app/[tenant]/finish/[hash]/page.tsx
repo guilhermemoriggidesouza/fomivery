@@ -4,6 +4,8 @@ import OrderFinish from "~/components/orderFinish";
 import { BoughtProductType } from "~/domain/product";
 import { OrderType } from "~/domain/order";
 import { OrgType } from "~/domain/org";
+import HeaderOrg from "~/components/headerOrg";
+import { headers } from "next/headers";
 
 export default async function Finish({
   params,
@@ -14,6 +16,7 @@ export default async function Finish({
   if (!dataOrg) {
     return <NotFound />;
   }
+  const base = `${headers().get("x-forwarded-proto")}://${headers().get("host")}`;
   const dataOrder = await api.order.getOrder({ hash: params.hash });
   const order = JSON.parse(JSON.stringify(dataOrder)) as OrderType;
   const org = { ...dataOrg } as OrgType;
@@ -38,6 +41,7 @@ export default async function Finish({
         }}
       />
       <div className="absolute top-0 m-auto h-screen w-screen overflow-auto">
+        <HeaderOrg org={dataOrg} url={base} />
         <OrderFinish
           bgColor={dataOrg.bgColor}
           fontColor={dataOrg.fontColor}

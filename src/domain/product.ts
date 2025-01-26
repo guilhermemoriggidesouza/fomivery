@@ -50,6 +50,7 @@ export class BoughtProduct extends Product {
   price?: number = 0;
   hash?: string;
   quantity: number = 0;
+  idsAccumulator: string;
 
   constructor(product: Product) {
     super(
@@ -65,6 +66,7 @@ export class BoughtProduct extends Product {
       product.hasAdditional,
       product.additional,
     );
+    this.idsAccumulator = `${this.id.toString()}${this.additional?.map((adt) => adt.product.id).join("")}`;
     this.hash = v4();
     if (product.additional && product.additional.length > 0) {
       const valuesAditional = product.additional
@@ -79,6 +81,7 @@ export class BoughtProduct extends Product {
   }
 
   reCalculate() {
+    this.idsAccumulator = `${this.id.toString()}${this.additional?.map((adt) => adt.product.id).join("")}`;
     const valuesAditional = this.additional?.map((p) => p.product.value ?? 0);
     this.price =
       (this.value ?? 0) +

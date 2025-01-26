@@ -162,7 +162,7 @@ export default function Menu({
     let newArray = [...boughtProducts];
     let hasProduct = false;
     newArray = newArray.map((item) => {
-      if (item.hash! == product.hash!) {
+      if (item.idsAccumulator! == product.idsAccumulator!) {
         item.quantity += 1;
         hasProduct = true;
       }
@@ -196,7 +196,7 @@ export default function Menu({
     let newArray: BoughtProduct[] = [...boughtProducts];
     const newArrayProducts: BoughtProduct[] = newArray
       .map((item) => {
-        if (item && item.hash! == product.hash! && item.quantity > 0) {
+        if (item && item.idsAccumulator! == product.idsAccumulator! && item.quantity > 0) {
           item.quantity -= 1;
           setQtdItens((value) => {
             window.sessionStorage.setItem(
@@ -434,8 +434,8 @@ export default function Menu({
                 </div>
                 <div className="self-center">
                   <p className="mb-2 truncate">
-                    {item.price &&
-                      `[R$ ${item.price.toFixed(2).replace(".", ",")}] `}
+                    {item.value &&
+                      `[R$ ${item.value.toFixed(2).replace(".", ",")}] `}
                     {item.title}
                   </p>
                   <div className="mt-2">
