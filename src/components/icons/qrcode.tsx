@@ -1,11 +1,11 @@
-export const QrcodeIcon = () => {
+export const QrcodeIcon = ({ color }: { color: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="currentColor"
+      stroke={color}
       className="size-6 text-blue-500"
     >
       <path

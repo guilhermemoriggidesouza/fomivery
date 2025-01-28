@@ -20,7 +20,7 @@ const Checkbox = React.forwardRef<
   >
     <CheckboxPrimitive.Indicator
       className={cn(
-        "flex items-center justify-center bg-blue-500 text-current",
+        "flex items-center justify-center text-current",
       )}
     >
       <CheckIcon className="h-4 w-4" />

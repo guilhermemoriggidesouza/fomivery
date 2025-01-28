@@ -11,6 +11,8 @@ import { UserIcon } from "./icons/user";
 import { QrcodeIcon } from "./icons/qrcode";
 import { Money } from "./icons/money";
 import { CardIcon } from "./icons/card";
+import { useContext } from "react";
+import { ThemeContext } from "~/context/themeProvider";
 
 export type FormUserInfoType = {
   name?: string;
@@ -35,10 +37,12 @@ type FormUserInfoProps = {
 export function FormUserInfo({
   payload,
   setField,
-  org,
   isPendingTaxValue,
   taxValue,
 }: FormUserInfoProps) {
+  const {
+    theme: { bgColor, fontColor },
+  } = useContext(ThemeContext);
   const fetchCep = async (cep: string) => {
     const addressInfo = await fetch(
       `https://viacep.com.br/ws/${cep}/json/`,
@@ -62,9 +66,9 @@ export function FormUserInfo({
   };
 
   return (
-    <>
+    <div style={{ color: fontColor }}>
       <div className="mb-2 flex gap-2">
-        <UserIcon />
+        <UserIcon color={fontColor} />
         <p>Digite suas informações:</p>
       </div>
       <div className="mb-2">
@@ -116,7 +120,7 @@ export function FormUserInfo({
               setField({ delivery: true });
             }}
           />
-          <HomeIcon />
+          <HomeIcon color={fontColor} />
           <Label htmlFor="delivery" className="ml-1 mr-2">
             Entrega
           </Label>
@@ -130,7 +134,7 @@ export function FormUserInfo({
               setField({ delivery: false });
             }}
           />
-          <StoreIcon />
+          <StoreIcon color={fontColor} />
           <Label htmlFor="notDelivery" className="ml-1 mr-2">
             Retirada
           </Label>
@@ -222,7 +226,7 @@ export function FormUserInfo({
             }
           }}
         />
-        <CardIcon />
+        <CardIcon color={fontColor} />
         <Label htmlFor="paymentTypeCard" className="ml-1 mr-2">
           Cartão
         </Label>
@@ -238,7 +242,7 @@ export function FormUserInfo({
             }
           }}
         />
-        <Money />
+        <Money color={fontColor} />
         <Label htmlFor="paymentTypeMoney" className="ml-1 mr-2">
           Dinheiro
         </Label>
@@ -247,6 +251,7 @@ export function FormUserInfo({
         <Checkbox
           id="paymentTypePix"
           className="mr-1"
+          color={fontColor}
           checked={Boolean(payload.paymentType == "PIX")}
           onCheckedChange={(e) => {
             if (e) {
@@ -254,7 +259,7 @@ export function FormUserInfo({
             }
           }}
         />
-        <QrcodeIcon />
+        <QrcodeIcon color={fontColor} />
         <Label htmlFor="paymentTypePix" className="ml-1 mr-2">
           Pix
         </Label>
@@ -286,6 +291,6 @@ export function FormUserInfo({
           id="obs"
         />
       </div>
-    </>
+    </div>
   );
 }

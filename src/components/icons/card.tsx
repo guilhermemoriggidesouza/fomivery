@@ -1,9 +1,9 @@
-export const CardIcon = () => {
+export const CardIcon = ({ color }: { color: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill={color}
       className="size-6 text-blue-500"
     >
       <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />

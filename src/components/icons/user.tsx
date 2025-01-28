@@ -1,9 +1,9 @@
-export const UserIcon = () => {
+export const UserIcon = ({ color }: { color: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill={color}
       className="size-6 text-blue-500"
     >
       <path

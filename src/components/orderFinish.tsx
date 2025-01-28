@@ -25,14 +25,12 @@ export default function OrderFinish({
   fontColor,
   org,
 }: OrderFinishProps) {
-  const [openUserInfos, setOpenUserInfos] = useState(false);
   const [payload, setPayload] = useState<FormUserInfoType>({
     paymentType: "CARTAO",
   });
   const debouncePayload = useDebounce(payload, 2000);
   const finishOrder = () => {
     window.sessionStorage.clear();
-    setOpenUserInfos(false);
   };
 
   const { isSuccess: isSuccessFinishOrder, mutate: mutateOrder } =
@@ -143,54 +141,69 @@ export default function OrderFinish({
   return (
     <ThemeProvider bgColor={bgColor} fontColor={fontColor}>
       <div
-        className="blockquote animate__slideInDown animate__animated mx-4 mb-4 sm:m-auto"
+        className="blockquote animate__slideInDown animate__animated m-auto mb-4 ml-1 border bg-white sm:m-auto md:w-1/2 xl:w-1/3"
         style={{
-          maxWidth: "600px",
           color: fontColor,
           backgroundColor: bgColor,
         }}
       >
         <div className="flex">
           <Back />
-          <p className="mb-2 ml-4 text-xl">
-            <strong>
-              TOTAL PEDIDO: R$
-              {getTotalValue(order).toFixed(2).replace(".", ",")}
-            </strong>
+          <p className="my-2 mr-5 w-full text-center text-xl">
+            Digite suas informações para concluir o pedido
           </p>
         </div>
-
-        <hr />
-        <div className="m-4 max-h-[70%] overflow-y-auto truncate text-left">
-          {order.products.map((item, i) => (
+        <div className="m-4 overflow-y-auto border p-4 text-left">
+          {!order.finishAt ? (
+            <FormUserInfo
+              isPendingTaxValue={isPendingTaxCalculate}
+              taxValue={calculatedTax?.taxValue}
+              setField={(newPayload) => {
+                setPayload((oldPayload) => {
+                  return {
+                    ...oldPayload,
+                    ...newPayload,
+                  };
+                });
+              }}
+              org={org as Org}
+              payload={payload}
+            />
+          ) : (
             <>
-              <p key={i} className="text-md mt-4">
-                {item.quantity} x
-                {item.value &&
-                  ` [R$ ${item.value!.toFixed(2).replace(".", ",")}] `}
-                {item.title}
-              </p>
-              {item.additional?.map((add, i) => (
-                <p key={i} className="ml-10">
-                  {add.product.value &&
-                    ` + [R$ ${add.product.value!.toFixed(2).replace(".", ",")}] `}
-                  {add.product.title}
-                </p>
+              {order.products.map((item, i) => (
+                <>
+                  <p key={i} className="text-md mt-4">
+                    {item.quantity} x
+                    {item.value &&
+                      ` [R$ ${item.value!.toFixed(2).replace(".", ",")}] `}
+                    {item.title}
+                  </p>
+                  {item.additional?.map((add, i) => (
+                    <p key={i} className="ml-10">
+                      {add.product.value &&
+                        ` + [R$ ${add.product.value!.toFixed(2).replace(".", ",")}] `}
+                      {add.product.title}
+                    </p>
+                  ))}
+                </>
               ))}
             </>
-          ))}
+          )}
         </div>
         <hr />
-        <p className="mt-4">
-          Total produtos: R$
-          {getProductValue(order).toFixed(2).replace(".", ",")}
-        </p>
-        {order.tax && (
-          <p>Taxa de entrega: R$ {order.tax.toFixed(2).replace(".", ",")}</p>
-        )}
         <div className="mt-2 flex flex-col items-center justify-center">
           {order.finishAt ? (
             <>
+              <p className="mt-4">
+                Total produtos: R$
+                {getProductValue(order).toFixed(2).replace(".", ",")}
+              </p>
+              {order.tax && (
+                <p>
+                  Taxa de entrega: R$ {order.tax.toFixed(2).replace(".", ",")}
+                </p>
+              )}
               <div className="flex text-lg">
                 <p className="w-full text-center">
                   <b>Seu pedido foi feito com sucesso!</b>
@@ -204,56 +217,34 @@ export default function OrderFinish({
               </p>
             </>
           ) : (
-            <button
-              onClick={() => {
-                setOpenUserInfos(true);
-              }}
-              className="mx-4 mb-4 rounded-full bg-blue-500 px-4 py-2 font-bold text-white shadow-lg hover:bg-blue-600"
-            >
-              <p>Enviar para Whatsapp</p>
-            </button>
+            <>
+              <p className="mb-2 ml-4 text-xl">
+                <strong>
+                  TOTAL PEDIDO: R$
+                  {getTotalValue(order).toFixed(2).replace(".", ",")}
+                </strong>
+              </p>
+              {payload.delivery && !calculatedTax?.taxValue && (
+                <i>Para continuar, aguarde o calculo da entrega</i>
+              )}
+              <button
+                disabled={payload.delivery && !calculatedTax?.taxValue}
+                onClick={handlerSendWhats}
+                className={`mx-4 mb-4 rounded-full ${payload.delivery && !calculatedTax?.taxValue ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"} px-4 py-2 font-bold text-white shadow-lg`}
+              >
+                <p>Enviar para Whatsapp</p>
+              </button>
+            </>
           )}
         </div>
         <div
           className="blockquote-after"
           style={{
-            background:
-              `linear-gradient(-45deg, transparent 70%, ${bgColor} 75%),linear-gradient( 45deg, transparent 70%, ${bgColor} 75%);`,
+            border: `solid 1px linear-gradient(-45deg, transparent 70%, #FFFFFF 75%),linear-gradient( 45deg, transparent 70%, #FFFFFF 75%);`,
+            background: `linear-gradient(-45deg, transparent 70%, #FFFFFF 75%),linear-gradient( 45deg, transparent 70%, #FFFFFF 75%);`,
           }}
         ></div>
       </div>
-      <UserInfosModal
-        open={openUserInfos}
-        onOpenChange={setOpenUserInfos}
-        description="Quase lá, informe seus dados para montarmos seu pedido"
-        title="Informações pessoais"
-        saveButton={
-          <div className="text-center">
-            <p>
-              <br />
-              <i>O valor do pedido deve ser pago na entrega</i>
-            </p>
-            <Button variant="outline" onClick={handlerSendWhats}>
-              Enviar WhatsApp
-            </Button>
-          </div>
-        }
-      >
-        <FormUserInfo
-          isPendingTaxValue={isPendingTaxCalculate}
-          taxValue={calculatedTax?.taxValue}
-          setField={(newPayload) => {
-            setPayload((oldPayload) => {
-              return {
-                ...oldPayload,
-                ...newPayload,
-              };
-            });
-          }}
-          org={org as Org}
-          payload={payload}
-        />
-      </UserInfosModal>
     </ThemeProvider>
   );
 }
