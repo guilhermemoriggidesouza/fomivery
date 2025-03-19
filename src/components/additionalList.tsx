@@ -1,15 +1,15 @@
 "use client";
-import { AdditionalSection } from "~/domain/additionalSection";
 import Loading from "./ui/loading";
 import { Dispatch, SetStateAction, useState } from "react";
 import { AdditionalSection as AditionalSectionComponent } from "./additionalSection";
 import { Additional } from "~/domain/additional";
+import Section from "~/domain/section";
 
 export type AdditionalProps = {
   loading: boolean;
   obrigatory: boolean;
-  additionalSection: AdditionalSection[];
-  setAdditionalSection: Dispatch<SetStateAction<AdditionalSection[]>>;
+  additionalSection: Section[];
+  setAdditionalSection: Dispatch<SetStateAction<Section[]>>;
 };
 
 export const AdditionalList = ({
@@ -20,7 +20,7 @@ export const AdditionalList = ({
 }: AdditionalProps) => {
   const setControl = (
     products: Additional[],
-    addSection: AdditionalSection,
+    addSection: Section,
   ) => {
     setAdditionalSection((addControls) => {
       const newAddControls = [...addControls];

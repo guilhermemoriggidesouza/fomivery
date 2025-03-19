@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import SectionRepository from "~/application/repositories/section";
 import Section from "~/domain/section";
 import { db } from "~/infra/db";
@@ -9,9 +9,21 @@ export default class SectionRepositoryImp implements SectionRepository {
     const sections = await db
       .select()
       .from(sectionTable)
-      .where(eq(sectionTable.org_id, orgId));
+      .where(
+        and(
+          eq(sectionTable.org_id, orgId),
+          eq(sectionTable.isAdditional, false),
+        ),
+      );
     return sections.map(
-      (section) => new Section(section.id, section.title, section.org_id),
+      (section) =>
+        new Section(
+          section.id,
+          section.title,
+          section.org_id,
+          section.max_per_additional ?? undefined,
+          section.min_per_additional ?? undefined,
+        ),
     );
   }
 }

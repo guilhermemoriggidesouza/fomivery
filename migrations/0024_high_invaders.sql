@@ -1,1 +1,0 @@
-ALTER TABLE `order_product` RENAME COLUMN "text_id" TO "hash_id";

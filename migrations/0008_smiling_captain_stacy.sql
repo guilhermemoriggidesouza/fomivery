@@ -1,1 +1,0 @@
-ALTER TABLE `order` ALTER COLUMN "name" TO "name" text;

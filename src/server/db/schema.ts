@@ -47,16 +47,9 @@ export const sectionTable = sqliteTable("section", {
   org_id: integer("org_id")
     .notNull()
     .references(() => orgTable.id),
-});
-
-export const additionalSectionTable = sqliteTable("additional_section", {
-  id: integer("id").primaryKey(),
-  title: text("title").notNull(),
-  org_id: integer("org_id")
-    .notNull()
-    .references(() => orgTable.id),
   max_per_additional: integer("max_per_additional"),
   min_per_additional: integer("min_per_additional"),
+  isAdditional: integer({ mode: "boolean" }).default(false),
 });
 
 export const productTable = sqliteTable("product", {
@@ -65,10 +58,6 @@ export const productTable = sqliteTable("product", {
   description: text("description"),
   value: real("value"),
   image: text("image"),
-  section_id: integer("section_id").references(() => sectionTable.id),
-  additional_section_id: integer("additional_section_id").references(
-    () => additionalSectionTable.id,
-  ),
   org_id: integer("org_id")
     .notNull()
     .references(() => orgTable.id),
@@ -102,4 +91,10 @@ export const productAdditionalTable = sqliteTable("product_additional", {
   id_product_additional: integer("id_product_additional").references(
     () => productTable.id,
   ),
+});
+
+export const productSectionTable = sqliteTable("product_section", {
+  id: integer("id").primaryKey(),
+  id_product: integer("id_product").references(() => productTable.id),
+  id_section: integer("id_section").references(() => sectionTable.id),
 });
