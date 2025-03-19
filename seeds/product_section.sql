@@ -41,7 +41,3 @@ INSERT INTO product_section (id_product, id_section) VALUES
   (38, 4),  -- Batata Palha -> Adicionais
   (39, 4);  -- Ovo Frito -> Adicionais
 
-INSERT INTO product_section (id_product, id_section) VALUES
-  (31, 5),  -- Milho -> Adicionais
-  (35, 5),  -- Queijo Adicional -> Adicionais
-  (36, 5),  -- Bacon -> Adicionais
