@@ -9,6 +9,7 @@ import {
     DialogTitle,
 } from "~/components/ui/dialog";
 import FormProduct from "./form";
+import Product from "~/domain/product";
 import { Button } from "../ui/button";
 
 interface ProductFormData {
@@ -19,7 +20,7 @@ interface ProductFormData {
     description: string;
 }
 
-export default function AddProductModal({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function EditProductModal({ open, setOpen, product }: { product?: Product, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
 
     const addProduct = (form: ProductFormData) => {
 
@@ -31,7 +32,7 @@ export default function AddProductModal({ open, setOpen }: { open: boolean, setO
                 <DialogHeader>
                     <DialogTitle>Adicionar novo Produto</DialogTitle>
                 </DialogHeader>
-                <FormProduct onSubmit={addProduct} />
+                <FormProduct product={product} onSubmit={addProduct} />
                 <DialogClose asChild>
                     <Button variant="outline" type="button">
                         Cancelar
