@@ -1,12 +1,24 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-export default clerkMiddleware();
+const isProtectedRoute = createRouteMatcher(["/admin(.*)"]);
+
+const publicAdminRoutes = ["/sign-in"];
+
+export default clerkMiddleware(async (auth, req) => {
+  const path = req.nextUrl.pathname;
+  req.headers.set("x-pathname", path);
+  console.log(path )
+  if (isProtectedRoute(req) && !publicAdminRoutes.includes(path)) {
+    await auth.protect(); // ✅ proteção aplicada
+  }
+  return NextResponse.next({
+    request: {
+      headers: req.headers,
+    },
+  });
+});
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/admin/:path*"], // só ativa o middleware nas rotas /admin
 };
