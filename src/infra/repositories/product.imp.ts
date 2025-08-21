@@ -6,7 +6,6 @@ import {
   productAdditionalTable,
   productSectionTable,
   productTable,
-  sectionTable,
 } from "~/server/db/schema";
 
 export default class ProductRepositoryImp implements ProductRepository {
@@ -29,6 +28,27 @@ export default class ProductRepositoryImp implements ProductRepository {
           product.obrigatory_additional ?? false,
           product.value ?? undefined,
           product_section!.id ?? undefined,
+          product.description ?? undefined,
+          product.image ?? undefined,
+        ),
+    );
+  }
+
+  async findByOrgId(orgId: number): Promise<Product[]> {
+    const productsDb = await db
+      .select()
+      .from(productTable)
+      .where(eq(productTable.org_id, orgId));
+
+    return productsDb.map(
+      (product) =>
+        new Product(
+          product.id,
+          product.title,
+          product.org_id,
+          product.obrigatory_additional ?? false,
+          product.value ?? undefined,
+          undefined,
           product.description ?? undefined,
           product.image ?? undefined,
         ),
@@ -90,7 +110,11 @@ export default class ProductRepositoryImp implements ProductRepository {
       org_id: product.orgId,
       obrigatory_additional: product.obrigatoryAdditional,
     })
+
     return product
   }
 
+  async delete(productId: number) {
+    await db.delete(productTable).where(eq(productTable.id, productId))
+  }
 }

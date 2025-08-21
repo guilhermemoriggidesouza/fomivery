@@ -3,6 +3,8 @@ import { createTRPCRouter, publicRoute } from "../trpc";
 import ProductRepositoryImp from "~/infra/repositories/product.imp";
 import CreatProductUseCase from "~/application/usecases/createProduct";
 import GetOnlyProducts from "~/application/usecases/getOnlyProducts";
+import { TRPCError } from "@trpc/server";
+import DeleteProductUseCase from "~/application/usecases/deleteProduct";
 
 export const productRouter = createTRPCRouter({
   create: publicRoute
@@ -16,12 +18,20 @@ export const productRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const productRepository = new ProductRepositoryImp();
-      const createSugestionUseCase = new CreatProductUseCase(
-        productRepository,
-      );
-      const product = await createSugestionUseCase.execute(input);
-      return product;
+      try {
+        const productRepository = new ProductRepositoryImp();
+        const createSugestionUseCase = new CreatProductUseCase(
+          productRepository,
+        );
+        const product = await createSugestionUseCase.execute(input);
+        return product;
+      } catch (error) {
+        console.error(error)
+        throw new TRPCError({
+          code: "BAD_REQUEST", // ou UNAUTHORIZED, NOT_FOUND, etc.
+          message: "Produto não foi salvo.",
+        });
+      }
     }),
 
   getByOrgId: publicRoute.input(z.number()).query(async ({ ctx, input }) => {
@@ -31,5 +41,13 @@ export const productRouter = createTRPCRouter({
     );
     const product = await getOnlyProductsUseCase.execute(input);
     return product;
+  }),
+  delete: publicRoute.input(z.number()).mutation(async ({ ctx, input }) => {
+    const productRepository = new ProductRepositoryImp();
+    const deleteProductsUseCase = new DeleteProductUseCase(
+      productRepository,
+    );
+     await deleteProductsUseCase.execute(input);
+    return input;
   })
 })

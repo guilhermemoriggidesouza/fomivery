@@ -49,6 +49,7 @@ export default function FormProduct({ product, onSubmit }: { onSubmit: (form: Pr
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        console.log(form)
         onSubmit(form)
     }
 

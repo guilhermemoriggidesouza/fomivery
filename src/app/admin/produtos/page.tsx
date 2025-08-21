@@ -14,7 +14,7 @@ export default async function ProductsPage() {
 
     return (
         <main className="container mx-auto p-6 h-[100vh] overflow-auto">
-            <ListProducts products={products.map((product) => ({ ...product }))} />
+            <ListProducts products={products.map((product) => ({ ...product }))} orgId={Number(orgId)} />
         </main>
     );
 }

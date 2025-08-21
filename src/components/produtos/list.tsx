@@ -2,14 +2,17 @@
 import Product from "~/domain/product";
 import { Button } from "../ui/button";
 import { ProductItem } from "./item";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddProductModal from "./add";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { useDebounce } from "../hooks/use-debounce";
 import EditProductModal from "./edit";
+import { api } from "~/trpc/react";
 
-export function ListProducts({ products }: { products: Product[] }) {
+export type ProductItem = Product & { new?: boolean }
+
+export function ListProducts({ products, orgId }: { products: ProductItem[], orgId: number }) {
     const [productsState, setProductState] = useState(products)
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
@@ -20,6 +23,16 @@ export function ListProducts({ products }: { products: Product[] }) {
         p.title.toLowerCase().includes(debouncedValue.toLowerCase())
     );
 
+    const { mutate: deleteProduct } = api.product.delete.useMutation({
+        onSuccess: (id) => {
+            const newProducts = productsState.filter(p => p.id !== id)
+            setProductState([...newProducts])
+        },
+        onError: () => {
+            alert("Erro ao deletar produto")
+        }
+    })
+
     const onEditProduct = (product: Product) => {
         setProduct(product)
         setOpenEdit(true)
@@ -28,8 +41,7 @@ export function ListProducts({ products }: { products: Product[] }) {
     const onDeleteProduct = (id: number) => {
         const confirmation = confirm("Deseja mesmo excluir esse produto?")
         if (!confirmation) return
-        const newProducts = productsState.filter(p => p.id !== id)
-        setProductState([...newProducts])
+        deleteProduct(id)
     }
 
     return (
@@ -55,7 +67,12 @@ export function ListProducts({ products }: { products: Product[] }) {
                     <ProductItem product={product} onEditProduct={onEditProduct} onDeleteProduct={onDeleteProduct} />
                 ))}
             </div>
-            <AddProductModal open={openAdd} setOpen={setOpenAdd} />
+            <AddProductModal open={openAdd} setOpen={setOpenAdd} orgId={orgId} onAdd={(product) => {
+                const newProducts = [...productsState]
+                newProducts.unshift({ ...product, new: true })
+                setProductState(newProducts)
+                setOpenAdd(false)
+            }} />
             <EditProductModal product={productEdit} open={openEdit} setOpen={setOpenEdit} />
         </div>
     )

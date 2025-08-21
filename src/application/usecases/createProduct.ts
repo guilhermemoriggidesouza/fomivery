@@ -20,10 +20,9 @@ export default class CreatProductUseCase {
             input.obrigatoryAdditional,
             input.value,
             undefined,
-            undefined,
             input.description
         );
-        this.productRepository.create(product)
+        await this.productRepository.create(product)
         return product;
     }
 }
