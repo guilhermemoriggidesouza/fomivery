@@ -89,7 +89,6 @@ export default class ProductRepositoryImp implements ProductRepository {
       value: product.value,
       org_id: product.orgId,
       obrigatory_additional: product.obrigatoryAdditional,
-      section_id: null
     })
     return product
   }
