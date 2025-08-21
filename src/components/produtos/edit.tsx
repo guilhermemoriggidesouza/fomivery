@@ -11,6 +11,7 @@ import {
 import FormProduct from "./form";
 import Product from "~/domain/product";
 import { Button } from "../ui/button";
+import { api } from "~/trpc/react";
 
 interface ProductFormData {
     title: string;
@@ -21,9 +22,8 @@ interface ProductFormData {
 }
 
 export default function EditProductModal({ open, setOpen, product }: { product?: Product, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
-
     const addProduct = (form: ProductFormData) => {
-
+        
     }
 
     return (
@@ -33,11 +33,6 @@ export default function EditProductModal({ open, setOpen, product }: { product?:
                     <DialogTitle>Adicionar novo Produto</DialogTitle>
                 </DialogHeader>
                 <FormProduct product={product} onSubmit={addProduct} />
-                <DialogClose asChild>
-                    <Button variant="outline" type="button">
-                        Cancelar
-                    </Button>
-                </DialogClose>
             </DialogContent>
         </Dialog>
     );

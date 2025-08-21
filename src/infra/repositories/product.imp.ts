@@ -29,6 +29,29 @@ export default class ProductRepositoryImp implements ProductRepository {
         ),
     );
   }
+
+  async findByOrgId(orgId: number): Promise<Product[]> {
+    const productsDb = await db
+      .select()
+      .from(productTable)
+      .where(eq(productTable.org_id, orgId));
+
+    return productsDb.map(
+      (product) =>
+        new Product(
+          product.id,
+          product.title,
+          product.org_id,
+          product.obrigatory_additional ?? false,
+          product.value ?? undefined,
+          product.section_id ?? undefined,
+          product.additional_section_id ?? undefined,
+          product.description ?? undefined,
+          product.image ?? undefined,
+        ),
+    );
+  }
+
   async findBySectionAndOrg(
     sectionId: number,
     orgId: number,
@@ -73,4 +96,17 @@ export default class ProductRepositoryImp implements ProductRepository {
       );
     });
   }
+
+  async create(product: Product) {
+    await db.insert(productTable).values({
+      title: product.title,
+      description: product.description,
+      value: product.value,
+      org_id: product.orgId,
+      obrigatory_additional: product.obrigatoryAdditional,
+      section_id: null
+    })
+    return product
+  }
+
 }

@@ -15,7 +15,7 @@ export type ProductType = {
 };
 export default class Product {
   constructor(
-    public readonly id: number,
+    public id: number,
     public readonly title: string,
     public readonly orgId: number,
     public readonly obrigatoryAdditional: boolean = false,

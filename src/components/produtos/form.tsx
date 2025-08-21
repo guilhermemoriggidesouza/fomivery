@@ -40,10 +40,10 @@ export default function FormProduct({ product, onSubmit }: { onSubmit: (form: Pr
     const [form, setForm] = React.useState<ProductFormData>(initialForm);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const { name, value, type, checked } = e.target;
+        const { name, value, type } = e.target;
         setForm((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : type === "number" ? Number(value) : value,
+            [name]: type === "number" ? Number(value) : value,
         }));
     }
 
@@ -70,7 +70,13 @@ export default function FormProduct({ product, onSubmit }: { onSubmit: (form: Pr
                 <Checkbox
                     id="obrigatoryAdditional"
                     name="obrigatoryAdditional"
-                    checked={form.obrigatoryAdditional}
+                    checked={Boolean(form.obrigatoryAdditional)}
+                    onCheckedChange={(e) => {
+                        setForm((prev) => ({
+                            ...prev,
+                            obrigatoryAdditional: Boolean(e)
+                        }));
+                    }}
                 />
                 <Label htmlFor="obrigatoryAdditional">Adicional Obrigatório</Label>
             </div>

@@ -15,8 +15,6 @@ export default class GetProducts {
       input.sectionId,
       input.orgId,
     );
-    // todo: searchble tree error
-    // const menu = new Menu(products)
     return products;
   }
 }
