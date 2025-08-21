@@ -47,7 +47,7 @@ export const productRouter = createTRPCRouter({
     const deleteProductsUseCase = new DeleteProductUseCase(
       productRepository,
     );
-     await deleteProductsUseCase.execute(input);
+    await deleteProductsUseCase.execute(input);
     return input;
   })
 })

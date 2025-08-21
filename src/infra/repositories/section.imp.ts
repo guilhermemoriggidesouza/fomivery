@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import SectionRepository from "~/application/repositories/section";
 import Section from "~/domain/section";
 import { db } from "~/infra/db";
-import { sectionTable } from "~/server/db/schema";
+import { productSectionTable, sectionTable } from "~/server/db/schema";
 
 export default class SectionRepositoryImp implements SectionRepository {
   async findByOrgId(orgId: number): Promise<Section[]> {
@@ -25,5 +25,20 @@ export default class SectionRepositoryImp implements SectionRepository {
           section.min_per_additional ?? undefined,
         ),
     );
+  }
+
+
+  async create(product: Section) {
+    await db.insert(sectionTable).values({
+      title: product.title,
+      org_id: product.orgId,
+    })
+
+    return product
+  }
+
+  async delete(sectionId: number) {
+    await db.delete(productSectionTable).where(eq(sectionTable.id, sectionId))
+    await db.delete(sectionTable).where(eq(sectionTable.id, sectionId))
   }
 }
