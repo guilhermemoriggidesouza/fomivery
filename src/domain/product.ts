@@ -7,7 +7,6 @@ export type ProductType = {
   boolean?: boolean;
   value?: number;
   sectionId?: number;
-  adictionalSectionId?: number;
   description?: string;
   image?: string;
   hasAdditional?: boolean;
@@ -21,7 +20,6 @@ export default class Product {
     public readonly obrigatoryAdditional: boolean = false,
     public value?: number,
     public readonly sectionId?: number,
-    public readonly adictionalSectionId?: number,
     public readonly description?: string,
     public readonly image?: string,
     public readonly hasAdditional?: boolean,
@@ -36,7 +34,6 @@ export type BoughtProductType = {
   obrigatoryAdditional: boolean;
   value?: number;
   sectionId?: number;
-  adictionalSectionId?: number;
   description?: string;
   image?: string;
   hasAdditional?: boolean;
@@ -60,7 +57,6 @@ export class BoughtProduct extends Product {
       product.obrigatoryAdditional,
       product.value,
       product.sectionId,
-      product.adictionalSectionId,
       product.description,
       product.image,
       product.hasAdditional,
@@ -99,7 +95,6 @@ export class BoughtProduct extends Product {
       image: string | null;
       section_id: number | null;
       org_id: number;
-      additional_section_id: number | null;
       obrigatory_additional: boolean | null;
     },
     hash?: string,
@@ -111,7 +106,6 @@ export class BoughtProduct extends Product {
       productFromDb.obrigatory_additional ?? undefined,
       productFromDb.value ?? undefined,
       productFromDb.section_id ?? undefined,
-      productFromDb.additional_section_id ?? undefined,
       productFromDb.description ?? undefined,
       productFromDb.image ?? undefined,
     );

@@ -4,7 +4,9 @@ import Product from "~/domain/product";
 import { db } from "~/infra/db";
 import {
   productAdditionalTable,
+  productSectionTable,
   productTable,
+  sectionTable,
 } from "~/server/db/schema";
 
 export default class ProductRepositoryImp implements ProductRepository {
@@ -12,40 +14,21 @@ export default class ProductRepositoryImp implements ProductRepository {
     const productsDb = await db
       .select()
       .from(productTable)
+      .leftJoin(
+        productSectionTable,
+        eq(productSectionTable.id_product, productTable.id),
+      )
       .where(inArray(productTable.id, products));
 
     return productsDb.map(
-      (product) =>
+      ({ product, product_section }) =>
         new Product(
           product.id,
           product.title,
           product.org_id,
           product.obrigatory_additional ?? false,
           product.value ?? undefined,
-          product.section_id ?? undefined,
-          product.additional_section_id ?? undefined,
-          product.description ?? undefined,
-          product.image ?? undefined,
-        ),
-    );
-  }
-
-  async findByOrgId(orgId: number): Promise<Product[]> {
-    const productsDb = await db
-      .select()
-      .from(productTable)
-      .where(eq(productTable.org_id, orgId));
-
-    return productsDb.map(
-      (product) =>
-        new Product(
-          product.id,
-          product.title,
-          product.org_id,
-          product.obrigatory_additional ?? false,
-          product.value ?? undefined,
-          product.section_id ?? undefined,
-          product.additional_section_id ?? undefined,
+          product_section!.id ?? undefined,
           product.description ?? undefined,
           product.image ?? undefined,
         ),
@@ -63,20 +46,23 @@ export default class ProductRepositoryImp implements ProductRepository {
         value: productTable.value,
         org_id: productTable.org_id,
         obrigatory_additional: productTable.obrigatory_additional,
-        section_id: productTable.section_id,
+        section_id: productSectionTable.id_section,
         description: productTable.description,
         image: productTable.image,
-        additional_section_id: productTable.additional_section_id,
         count_additionals: count(productAdditionalTable.id),
       })
       .from(productTable)
+      .leftJoin(
+        productSectionTable,
+        eq(productSectionTable.id_product, productTable.id),
+      )
       .leftJoin(
         productAdditionalTable,
         eq(productAdditionalTable.id_product_owner, productTable.id),
       )
       .where(
         and(
-          eq(productTable.section_id, sectionId),
+          eq(productSectionTable.id_section, sectionId),
           eq(productTable.org_id, orgId),
         ),
       )
@@ -89,7 +75,6 @@ export default class ProductRepositoryImp implements ProductRepository {
         product.obrigatory_additional ?? false,
         product.value ?? undefined,
         product.section_id ?? undefined,
-        product.additional_section_id ?? undefined,
         product.description ?? undefined,
         product.image ?? undefined,
         product.count_additionals > 0,

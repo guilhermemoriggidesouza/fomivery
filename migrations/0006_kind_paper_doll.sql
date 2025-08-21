@@ -1,1 +1,0 @@
-ALTER TABLE `order_product` ADD `qtd_product` integer NOT NULL;

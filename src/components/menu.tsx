@@ -15,10 +15,9 @@ import { useRouter } from "next/navigation";
 import { AdditionalModal } from "./modal/aditional";
 import { noReLoading } from "~/trpc/query-client";
 import { AdditionalList } from "./additionalList";
-import { AdditionalSection } from "~/domain/additionalSection";
 import { UpIcon } from "./icons/up";
 import { DownIcon } from "./icons/down";
-import { it } from "node:test";
+import Section from "~/domain/section";
 
 export type MenuProp = {
   sections: SectionItem[];
@@ -41,7 +40,7 @@ export default function Menu({
   const [sectionList, setSectionList] = useState(sections);
   const [section, setSection] = useState<SectionItem>(sections[0]!);
   const [additionalSection, setAdditionalSection] = useState<
-    AdditionalSection[]
+    Section[]
   >([]);
   const [openSugestion, setOpenSugestion] = useState(false);
   const [qtdItems, setQtdItens] = useState(0);
@@ -221,7 +220,7 @@ export default function Menu({
 
   const saveAdditionalToProduct = (
     selectedProduct: BoughtProduct,
-    additionalSection: AdditionalSection[],
+    additionalSection: Section[],
   ) => {
     if (additionalSection.length == 0) {
       closeModalAdditional();

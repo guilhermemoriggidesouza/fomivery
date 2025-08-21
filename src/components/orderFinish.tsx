@@ -150,7 +150,9 @@ export default function OrderFinish({
         <div className="flex">
           <Back />
           <p className="my-2 mr-5 w-full text-center text-xl">
-            Digite suas informações para concluir o pedido
+            {order.finishAt
+              ? "Detalhes do pedido"
+              : "Digite suas informações para concluir o pedido"}
           </p>
         </div>
         <div className="m-4 overflow-y-auto border p-4 text-left">
@@ -192,7 +194,7 @@ export default function OrderFinish({
           )}
         </div>
         <hr />
-        <div className="mt-2 flex flex-col items-center justify-center">
+        <div className="mb-2 flex flex-col items-center justify-center">
           {order.finishAt ? (
             <>
               <p className="mt-4">
@@ -212,6 +214,7 @@ export default function OrderFinish({
               <p className="w-full text-center">
                 <i>
                   caso tenha uma duvida, basta entrar em contato no número:
+                  <br />
                   {telephoneMask(org.telephone)}
                 </i>
               </p>

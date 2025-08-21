@@ -1,5 +1,8 @@
 require("dotenv").config();
-
+console.log({
+  url: process.env.TURSO_DATABASE_URL!,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 import type { Config } from "drizzle-kit";
 export default {
   schema: "./src/server/db/schema.ts",

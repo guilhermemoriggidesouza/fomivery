@@ -3,7 +3,7 @@ import ProductDomain, { BoughtProductType } from "~/domain/product";
 import Product from "./product";
 import { useState } from "react";
 import { ImageModal } from "./modal/image";
-import { title } from "process";
+
 export type ProductsProps = {
   products: ProductDomain[];
   boughtProducts?: BoughtProductType[];

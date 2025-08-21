@@ -4,7 +4,12 @@ import { Additional } from "~/domain/additional";
 import Order from "~/domain/order";
 import Product, { BoughtProduct } from "~/domain/product";
 import { db } from "~/infra/db";
-import { orderProdTable, orderTable, productTable } from "~/server/db/schema";
+import {
+  orderProdTable,
+  orderTable,
+  productSectionTable,
+  productTable,
+} from "~/server/db/schema";
 
 export default class OrderRepositoryImp implements orderRepository {
   async update(order: Order) {
@@ -68,8 +73,13 @@ export default class OrderRepositoryImp implements orderRepository {
       .from(orderTable)
       .leftJoin(orderProdTable, eq(orderProdTable.order_id, orderTable.id))
       .leftJoin(productTable, eq(productTable.id, orderProdTable.product_id))
+      .leftJoin(
+        productSectionTable,
+        eq(productSectionTable.id_product, productTable.id),
+      )
       .where(eq(orderTable.hash, orderHash))
       .all();
+
     const [order] = [...orderRecovery];
     if (!order) {
       return;
@@ -93,10 +103,14 @@ export default class OrderRepositoryImp implements orderRepository {
       order.order.address ?? undefined,
       order.order.tax ?? undefined,
     );
+
     orderDomain.products = orderRecovery
       .map((op) => {
         if (!op.order_product!.product_id_owner) {
-          const boughtProduct = BoughtProduct.create(op.product!);
+          const boughtProduct = BoughtProduct.create({
+            ...op.product!,
+            section_id: op.product_section!.id,
+          });
           boughtProduct.price = op.order_product!.price ?? undefined;
           boughtProduct.hash = op.order_product!.hash_id!;
           boughtProduct.quantity = op.order_product!.qtd_product;
@@ -104,20 +118,20 @@ export default class OrderRepositoryImp implements orderRepository {
         }
       })
       .filter((e) => e != undefined);
+
     const additionals = orderRecovery
       .filter((op) => op.order_product!.product_id_owner)
       .map((additional) => {
         const productOwner = orderDomain.products.find(
           (prod) => prod.id == additional.order_product?.product_id_owner,
         );
-        const productAdditional = new Product(
+        const productAdditional: Product = new Product(
           additional.product!.id,
           additional.product!.title,
           additional.product!.org_id,
           additional.product!.obrigatory_additional ?? false,
           additional.product!.value ?? undefined,
-          additional.product!.section_id ?? undefined,
-          additional.product!.additional_section_id ?? undefined,
+          additional.product_section!.id ?? undefined,
           additional.product!.description ?? undefined,
           additional.product!.image ?? undefined,
         );
