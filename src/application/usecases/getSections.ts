@@ -3,13 +3,14 @@ import SectionRepository from "../repositories/section";
 
 export type inputDTO = {
   orgId: number;
+  isAditional?: boolean
 };
 
 export default class GetSection {
-  constructor(private readonly sectionRepository: SectionRepository) {}
+  constructor(private readonly sectionRepository: SectionRepository) { }
 
   async execute(input: inputDTO): Promise<Section[]> {
-    const sections = await this.sectionRepository.findByOrgId(input.orgId);
+    const sections = await this.sectionRepository.findByOrgId(input.orgId, input.isAditional);
     return sections;
   }
 }

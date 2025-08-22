@@ -98,3 +98,18 @@ export const productSectionTable = sqliteTable("product_section", {
   id_product: integer("id_product").references(() => productTable.id),
   id_section: integer("id_section").references(() => sectionTable.id),
 });
+
+export const categoryTable = sqliteTable("category", {
+  id: integer("id").primaryKey(),
+  title: text("hash_id").notNull(),
+  color: text("hash_id").notNull(),
+  org_id: integer("org_id")
+    .notNull()
+    .references(() => orgTable.id),
+});
+
+export const producCategoryTable = sqliteTable("product_category", {
+  id: integer("id").primaryKey(),
+  id_product: integer("id_product").references(() => productTable.id),
+  id_category: integer("id_category").references(() => categoryTable.id),
+});

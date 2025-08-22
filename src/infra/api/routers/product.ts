@@ -5,6 +5,7 @@ import CreatProductUseCase from "~/application/usecases/createProduct";
 import GetOnlyProducts from "~/application/usecases/getOnlyProducts";
 import { TRPCError } from "@trpc/server";
 import DeleteProductUseCase from "~/application/usecases/deleteProduct";
+import SectionRepositoryImp from "~/infra/repositories/section.imp";
 
 export const productRouter = createTRPCRouter({
   create: publicRoute
@@ -15,13 +16,16 @@ export const productRouter = createTRPCRouter({
         obrigatoryAdditional: z.boolean(),
         value: z.number(),
         description: z.string(),
+        sections: z.array(z.number()),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
         const productRepository = new ProductRepositoryImp();
+        const sectionRepository = new SectionRepositoryImp();
         const createSugestionUseCase = new CreatProductUseCase(
           productRepository,
+          sectionRepository
         );
         const product = await createSugestionUseCase.execute(input);
         return product;

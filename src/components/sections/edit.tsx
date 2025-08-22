@@ -7,26 +7,33 @@ import {
     DialogHeader,
     DialogTitle,
 } from "~/components/ui/dialog";
-import FormSection from "./form";
+import FormSection, { SectionFormData } from "./form";
 import Section from "~/domain/section";
+import { api } from "~/trpc/react";
 
-interface SectionFormData {
-    title: string;
-    orgId: number;
-}
-
-export default function EditSectionModal({ open, setOpen, section }: { section?: Section, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
-    const addSection = (form: SectionFormData) => {
-
+export default function EditSectionModal({ open, setOpen, section, orgId }: { orgId: number, section?: Section, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+    const { mutate, isError, isPending } = api.section.edit.useMutation({
+        onError: (error) => {
+            alert("Erro ao editar produto")
+        },
+        onSuccess: (data) => {
+            setOpen(false)
+        }
+    })
+    const editSection = (form: SectionFormData) => {
+        mutate({
+            ...form,
+            id: section!.id,
+            orgId
+        })
     }
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-lg bg-white">
                 <DialogHeader>
-                    <DialogTitle>Adicionar novo Produto</DialogTitle>
+                    <DialogTitle>Editar sessão</DialogTitle>
                 </DialogHeader>
-                <FormSection section={section} onSubmit={addSection} isLoading={false} />
+                <FormSection section={section} onSubmit={editSection} isLoading={isPending} />
             </DialogContent>
         </Dialog>
     );

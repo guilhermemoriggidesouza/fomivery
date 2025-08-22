@@ -11,10 +11,15 @@ export default async function ProductsPage() {
     }
     const orgId = user!.publicMetadata!.orgId
     const products = await api.product.getByOrgId(Number(orgId))
+    const sections = await api.section.getSection({ orgId: Number(orgId) })
 
     return (
         <main className="container mx-auto p-6 h-[100vh] overflow-auto">
-            <ListProducts products={products.map((product) => ({ ...product }))} orgId={Number(orgId)} />
+            <ListProducts 
+                sections={sections.map((section) => ({ ...section, products: section.products?.map(product => ({ ...product })) }))} 
+                products={products.map((product) => ({ ...product, sections: product.sections?.map(section => ({ ...section })) }))} 
+                orgId={Number(orgId)} 
+            />
         </main>
     );
 }

@@ -8,22 +8,26 @@ import {
     DialogHeader,
     DialogTitle,
 } from "~/components/ui/dialog";
-import FormProduct from "./form";
+import FormProduct, { ProductFormData } from "./form";
 import Product from "~/domain/product";
-import { Button } from "../ui/button";
+import Section from "~/domain/section";
 import { api } from "~/trpc/react";
 
-interface ProductFormData {
-    title: string;
-    orgId: number;
-    obrigatoryAdditional: boolean;
-    value: number;
-    description: string;
-}
-
-export default function EditProductModal({ open, setOpen, product }: { product?: Product, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
-    const addProduct = (form: ProductFormData) => {
-        
+export default function EditProductModal({ open, setOpen, product, sections, orgId }: { orgId: number, sections: Section[], product?: Product, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+    // const { mutate, isError, isPending } = api.product.edit.useMutation({
+    //     onError: (error) => {
+    //         alert("Erro ao editar produto")
+    //     },
+    //     onSuccess: (data) => {
+    //         setOpen(false)
+    //     }
+    // })
+    const editProduct = (form: ProductFormData) => {
+        // mutate({
+        //     ...form,
+        //     id: product!.id,
+        //     orgId
+        // })
     }
 
     return (
@@ -32,7 +36,7 @@ export default function EditProductModal({ open, setOpen, product }: { product?:
                 <DialogHeader>
                     <DialogTitle>Adicionar novo Produto</DialogTitle>
                 </DialogHeader>
-                <FormProduct product={product} onSubmit={addProduct} />
+                <FormProduct product={product} onSubmit={editProduct} sections={sections} />
             </DialogContent>
         </Dialog>
     );

@@ -5,5 +5,6 @@ export default interface ProductRepository {
   findByIds: (products: number[]) => Promise<Product[]>;
   findByOrgId: (orgId: number) => Promise<Product[]>;
   create: (product: Product) => Promise<Product>
+  edit: (product: Product) => Promise<Product>
   delete: (productId: number) => Promise<void>
 }

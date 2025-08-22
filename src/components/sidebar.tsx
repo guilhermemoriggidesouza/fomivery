@@ -1,4 +1,4 @@
-import { Box, TableOfContents, Store, ChartArea } from "lucide-react";
+import { Box, TableOfContents, Store, ChartArea, Bookmark } from "lucide-react";
 
 import {
     Sidebar,
@@ -29,6 +29,11 @@ const items = [
         title: "Seções",
         url: "/admin/secoes",
         icon: TableOfContents,
+    },
+    {
+        title: "Categorias de produtos",
+        url: "/admin/categorias",
+        icon: Bookmark,
     },
     {
         title: "Gráficos",

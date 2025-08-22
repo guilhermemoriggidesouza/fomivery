@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import Section from "~/domain/section";
 import { SectionItem as SectionItemType } from "./list";
+import { Badge } from "../ui/badge";
 
 export function SectionItem({ section, onDeleteSection, onEditSection }: { section: SectionItemType, onDeleteSection?: (id: number) => void, onEditSection?: (section: Section) => void }) {
     return (
@@ -31,6 +32,15 @@ export function SectionItem({ section, onDeleteSection, onEditSection }: { secti
                     </Button>
                 </div>
             </CardHeader>
+            <CardContent>
+                <div className="mb-3">
+                    <Badge variant="secondary">{section.isAditional ? 'Adicional' : 'Topo'}</Badge>
+                </div>
+                {section.products && <div className="flex">
+                    <Badge variant='secondary'>{section.products?.length}</Badge>
+                    Produtos associados
+                </div>}
+            </CardContent>
         </Card>
 
     )

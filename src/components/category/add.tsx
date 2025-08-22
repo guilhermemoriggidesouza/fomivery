@@ -7,20 +7,20 @@ import {
     DialogHeader,
     DialogTitle,
 } from "~/components/ui/dialog";
-import FormSection, { SectionFormData } from "./form";
+import FormCategory, { CategoryFormData } from "./form";
 import { api } from "~/trpc/react";
-import Section from "~/domain/section";
+import Category from "~/domain/category";
 
-export default function AddSectionModal({ open, setOpen, orgId, onAdd }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, orgId: number, onAdd: (section: Section) => void }) {
-    const { mutate, isError, isPending } = api.section.create.useMutation({
+export default function AddCategoryModal({ open, setOpen, orgId, onAdd }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, orgId: number, onAdd: (category: Category) => void }) {
+    const { mutate, isError, isPending } = api.category.create.useMutation({
         onError: (error) => {
             alert("Erro ao cadastrar produto")
         },
         onSuccess: (data) => {
-            onAdd(data as Section)
+            onAdd(data as Category)
         }
     })
-    const addSection = (form: SectionFormData) => {
+    const addCategory = (form: CategoryFormData) => {
         mutate({
             ...form,
             orgId
@@ -31,9 +31,9 @@ export default function AddSectionModal({ open, setOpen, orgId, onAdd }: { open:
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-lg bg-white">
                 <DialogHeader>
-                    <DialogTitle>Adicionar nova Seção</DialogTitle>
+                    <DialogTitle>Adicionar nova Categoria</DialogTitle>
                 </DialogHeader>
-                <FormSection onSubmit={addSection} isLoading={isPending} />
+                <FormCategory onSubmit={addCategory} isLoading={isPending} />
             </DialogContent>
         </Dialog>
     );

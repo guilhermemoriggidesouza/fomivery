@@ -9,10 +9,11 @@ import { Input } from "../ui/input";
 import { useDebounce } from "../hooks/use-debounce";
 import EditProductModal from "./edit";
 import { api } from "~/trpc/react";
+import Section from "~/domain/section";
 
 export type ProductItem = Product & { new?: boolean }
 
-export function ListProducts({ products, orgId }: { products: ProductItem[], orgId: number }) {
+export function ListProducts({ products, orgId, sections }: { sections: Section[], products: ProductItem[], orgId: number }) {
     const [productsState, setProductState] = useState(products)
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
@@ -67,13 +68,13 @@ export function ListProducts({ products, orgId }: { products: ProductItem[], org
                     <ProductItem product={product} onEditProduct={onEditProduct} onDeleteProduct={onDeleteProduct} />
                 ))}
             </div>
-            <AddProductModal open={openAdd} setOpen={setOpenAdd} orgId={orgId} onAdd={(product) => {
+            <AddProductModal sections={sections} open={openAdd} setOpen={setOpenAdd} orgId={orgId} onAdd={(product) => {
                 const newProducts = [...productsState]
                 newProducts.unshift({ ...product, new: true })
                 setProductState(newProducts)
                 setOpenAdd(false)
             }} />
-            <EditProductModal product={productEdit} open={openEdit} setOpen={setOpenEdit} />
+            <EditProductModal sections={sections} product={productEdit} open={openEdit} setOpen={setOpenEdit} orgId={orgId} />
         </div>
     )
 }

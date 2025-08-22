@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import { Additional, AdditionalType } from "./additional";
+import Section from "./section";
 export type ProductType = {
   id: number;
   title: string;
@@ -24,7 +25,8 @@ export default class Product {
     public readonly image?: string,
     public readonly hasAdditional?: boolean,
     public additional?: Additional[],
-  ) {}
+    public sections?: Section[]
+  ) { }
 }
 
 export type BoughtProductType = {

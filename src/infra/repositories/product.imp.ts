@@ -1,11 +1,13 @@
 import { and, count, eq, inArray } from "drizzle-orm";
 import ProductRepository from "~/application/repositories/product";
 import Product from "~/domain/product";
+import Section from "~/domain/section";
 import { db } from "~/infra/db";
 import {
   productAdditionalTable,
   productSectionTable,
   productTable,
+  sectionTable,
 } from "~/server/db/schema";
 
 export default class ProductRepositoryImp implements ProductRepository {
@@ -111,10 +113,77 @@ export default class ProductRepositoryImp implements ProductRepository {
       obrigatory_additional: product.obrigatoryAdditional,
     })
 
+    if (product.sections) {
+      await Promise.all(product.sections.map(async (section) => {
+        await db.insert(productSectionTable).values({
+          id_product: product.id,
+          id_section: section.id
+        })
+      }))
+    }
+
+    return product
+  }
+
+  hasDiffSection(sections: number[], oldSections: number[]) {
+    const toRemove = oldSections.filter(oldSec => !sections.includes(oldSec))
+    const toAdd = sections.filter(sec => !oldSections.includes(sec))
+
+    return { toRemove, toAdd }
+  }
+
+  async edit(product: Product) {
+
+    await db.update(productTable).set({
+      title: product.title,
+      description: product.description,
+      value: product.value,
+      org_id: product.orgId,
+      obrigatory_additional: product.obrigatoryAdditional,
+    }).where(eq(productTable.id, product.id))
+
+    if (product.sections) {
+      const newSectionsIds = product.sections.map(sec => sec.id)
+      const productSections = await db.select({ id_section: productSectionTable.id_section })
+        .from(productSectionTable)
+        .where(eq(productSectionTable.id_product, product.id))
+      const { toAdd, toRemove } = this.hasDiffSection(newSectionsIds, productSections.map(ps => ps.id_section).filter(id => id !== null))
+
+      const listQuerys = []
+
+      listQuerys.push(
+        toAdd.map(async (section) => {
+          await db.insert(productSectionTable).values({
+            id_product: product.id,
+            id_section: section
+          })
+        })
+      )
+
+      listQuerys.push(
+        toRemove.map(async (section) => {
+          await db.delete(productSectionTable)
+            .where(
+              and(
+                eq(productSectionTable.id_product, product.id),
+                eq(productSectionTable.id_section, section)
+              )
+            )
+        })
+      )
+
+      await Promise.all(listQuerys)
+    }
     return product
   }
 
   async delete(productId: number) {
+    await db.delete(productSectionTable)
+      .where(
+        and(
+          eq(productSectionTable.id_product, productId),
+        )
+      )
     await db.delete(productTable).where(eq(productTable.id, productId))
   }
 }

@@ -4,12 +4,13 @@ import SectionRepository from "../repositories/section";
 export type inputDTO = {
     title: string,
     orgId: number,
+    id: number,
     isAditional: boolean
     min?: number,
     max?: number,
 };
 
-export default class CreatSectionUseCase {
+export default class EditSectionUseCase {
     constructor(private readonly sectionRepository: SectionRepository) { }
 
     async execute(input: inputDTO): Promise<Section> {
@@ -23,7 +24,7 @@ export default class CreatSectionUseCase {
             input.isAditional,
             undefined
         );
-        await this.sectionRepository.create(section)
+        await this.sectionRepository.edit(section)
         return section;
     }
 }

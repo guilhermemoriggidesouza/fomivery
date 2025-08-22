@@ -1,7 +1,8 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { api } from "~/trpc/server";
 import { redirect } from "next/navigation";
-import { ListSection } from "~/components/sections/list";
+import { ListCategory } from "~/components/category/list";
+import Category from "~/domain/category";
 
 export default async function SecoesPage() {
     const user = await currentUser()
@@ -9,11 +10,11 @@ export default async function SecoesPage() {
         redirect("/")
     }
     const orgId = user!.publicMetadata!.orgId
-    const sections = await api.section.getSection({ orgId: Number(orgId) })
-    console.log(sections)
+    const categories = await api.category.getByOrgId(Number(orgId))
+
     return (
         <main className="container mx-auto p-6 h-[100vh] overflow-auto">
-            <ListSection sections={sections.map((section) => ({ ...section, products: section.products?.map(product => ({ ...product })) }))} orgId={Number(orgId)} />
+            <ListCategory categories={categories.map((category: Category) => ({ ...category, }))} orgId={Number(orgId)} />
         </main>
     );
 }

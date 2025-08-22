@@ -8,18 +8,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "~/components/ui/dialog";
-import FormProduct from "./form";
+import FormProduct, { ProductFormData } from "./form";
 import { api } from "~/trpc/react";
 import Product from "~/domain/product";
+import Section from "~/domain/section";
 
-interface ProductFormData {
-    title: string;
-    obrigatoryAdditional: boolean;
-    value: number;
-    description: string;
-}
-
-export default function AddProductModal({ open, setOpen, orgId, onAdd }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, orgId: number, onAdd: (product: Product) => void }) {
+export default function AddProductModal({ open, setOpen, orgId, onAdd, sections }: { sections: Section[], open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, orgId: number, onAdd: (product: Product) => void }) {
     const { mutate, isError, } = api.product.create.useMutation({
         onError: (error) => {
             alert("Erro ao cadastrar produto")
@@ -31,6 +25,7 @@ export default function AddProductModal({ open, setOpen, orgId, onAdd }: { open:
     const addProduct = (form: ProductFormData) => {
         mutate({
             ...form,
+            sections: form.sections.map(sec => Number(sec)),
             orgId
         })
     }
@@ -43,7 +38,7 @@ export default function AddProductModal({ open, setOpen, orgId, onAdd }: { open:
                 <DialogHeader>
                     <DialogTitle>Adicionar novo Produto</DialogTitle>
                 </DialogHeader>
-                <FormProduct onSubmit={addProduct} />
+                <FormProduct onSubmit={addProduct} sections={sections} />
             </DialogContent>
         </Dialog>
     );

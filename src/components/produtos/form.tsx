@@ -1,14 +1,15 @@
 "use client";
 
 import * as React from "react";
-import {
-    DialogClose,
-} from "~/components/ui/dialog";
+
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Checkbox } from "~/components/ui/checkbox";
 import Product from "~/domain/product";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { SelectionSections } from "./selection-sections";
+import Section from "~/domain/section";
 
 export interface ProductFormData {
     title: string;
@@ -16,9 +17,10 @@ export interface ProductFormData {
     obrigatoryAdditional: boolean;
     value: number;
     description: string;
+    sections: string[];
 }
 
-export default function FormProduct({ product, onSubmit }: { onSubmit: (form: ProductFormData) => void, product?: Product, }) {
+export default function FormProduct({ product, onSubmit, sections }: { sections: Section[], onSubmit: (form: ProductFormData) => void, product?: Product, }) {
     let initialForm
     if (product) {
         initialForm = {
@@ -27,6 +29,7 @@ export default function FormProduct({ product, onSubmit }: { onSubmit: (form: Pr
             obrigatoryAdditional: product.obrigatoryAdditional,
             value: product.value ?? 0,
             description: product.description ?? '',
+            sections: product.sections?.map(section => section.id.toString()) ?? [],
         }
     } else {
         initialForm = {
@@ -35,6 +38,7 @@ export default function FormProduct({ product, onSubmit }: { onSubmit: (form: Pr
             obrigatoryAdditional: false,
             value: 0,
             description: "",
+            sections: [],
         }
     }
     const [form, setForm] = React.useState<ProductFormData>(initialForm);
@@ -67,20 +71,30 @@ export default function FormProduct({ product, onSubmit }: { onSubmit: (form: Pr
                 />
             </div>
 
-            <div className="flex items-center space-x-2">
-                <Checkbox
-                    id="obrigatoryAdditional"
-                    name="obrigatoryAdditional"
-                    checked={Boolean(form.obrigatoryAdditional)}
-                    onCheckedChange={(e) => {
-                        setForm((prev) => ({
-                            ...prev,
-                            obrigatoryAdditional: Boolean(e)
-                        }));
-                    }}
-                />
-                <Label htmlFor="obrigatoryAdditional">Adicional Obrigatório</Label>
-            </div>
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="obrigatoryAdditional"
+                            name="obrigatoryAdditional"
+                            checked={Boolean(form.obrigatoryAdditional)}
+                            onCheckedChange={(e) => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    obrigatoryAdditional: Boolean(e)
+                                }));
+                            }}
+                        />
+                        <Label htmlFor="obrigatoryAdditional">Adicional é obrigatório?</Label>
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Caso ativado, o produto vai exigir a escolha de uma adicional no carrinho</p>
+                </TooltipContent>
+            </Tooltip>
+
+            <SelectionSections selectedSections={product?.sections} sections={sections} setForm={setForm} />
 
             <div>
                 <Label htmlFor="value">Valor</Label>
