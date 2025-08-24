@@ -47,7 +47,8 @@ export function ListSection({ sections, orgId }: { sections: SectionItem[], orgI
     return (
         <div className="pb-5">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Seções</h1>
+                <h1 className="text-3xl font-bold">Sessões</h1>
+                <h1 className="text-lg font-semibold">As sessões podem ser classificadas 2 tipos, as sessões de topo que são exibidas no topo da tela para organizar o cardap.io para o seu cliente<br /> e as sessões de adicionais, que ao associadas ao produto, permitem que o cliente customize seu pedido, da forma como lhe agrada</h1>
                 <Button onClick={() => {
                     setOpenAdd(true)
                 }}>Adicionar</Button>

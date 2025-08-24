@@ -40,6 +40,7 @@ export function ListCategory({ categories, orgId }: { categories: CategoryItem[]
         <div className="pb-5">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Categorias</h1>
+                <h1 className="text-lg font-semibold">As categorias podem ser utilizadas para organizar a visualização dos pedidos na tela de pedidos</h1>
                 <Button onClick={() => {
                     setOpenAdd(true)
                 }}>Adicionar</Button>

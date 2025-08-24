@@ -12,8 +12,9 @@ import FormProduct, { ProductFormData } from "./form";
 import Product from "~/domain/product";
 import Section from "~/domain/section";
 import { api } from "~/trpc/react";
+import Category from "~/domain/category";
 
-export default function EditProductModal({ open, setOpen, product, sections, orgId }: { orgId: number, sections: Section[], product?: Product, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function EditProductModal({ open, setOpen, product, sections, orgId, categories }: { categories: Category[], orgId: number, sections: Section[], product?: Product, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
     // const { mutate, isError, isPending } = api.product.edit.useMutation({
     //     onError: (error) => {
     //         alert("Erro ao editar produto")
@@ -36,7 +37,7 @@ export default function EditProductModal({ open, setOpen, product, sections, org
                 <DialogHeader>
                     <DialogTitle>Adicionar novo Produto</DialogTitle>
                 </DialogHeader>
-                <FormProduct product={product} onSubmit={editProduct} sections={sections} />
+                <FormProduct product={product} onSubmit={editProduct} sections={sections} categories={categories} />
             </DialogContent>
         </Dialog>
     );

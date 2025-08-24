@@ -78,6 +78,7 @@ export const orderProdTable = sqliteTable("order_product", {
   ),
   qtd_product: integer("qtd_product").notNull(),
   price: real("price"),
+  status: text("status").default("TRIAGEM"),
   order_id: integer("order_id")
     .notNull()
     .references(() => orderTable.id),

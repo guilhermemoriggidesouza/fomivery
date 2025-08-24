@@ -10,6 +10,8 @@ import Product from "~/domain/product";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { SelectionSections } from "./selection-sections";
 import Section from "~/domain/section";
+import Category from "~/domain/category";
+import { SelectionCategories } from "./selection-category";
 
 export interface ProductFormData {
     title: string;
@@ -18,9 +20,10 @@ export interface ProductFormData {
     value: number;
     description: string;
     sections: string[];
+    categories: string[];
 }
 
-export default function FormProduct({ product, onSubmit, sections }: { sections: Section[], onSubmit: (form: ProductFormData) => void, product?: Product, }) {
+export default function FormProduct({ product, onSubmit, sections, categories }: { categories: Category[], sections: Section[], onSubmit: (form: ProductFormData) => void, product?: Product, }) {
     let initialForm
     if (product) {
         initialForm = {
@@ -30,6 +33,7 @@ export default function FormProduct({ product, onSubmit, sections }: { sections:
             value: product.value ?? 0,
             description: product.description ?? '',
             sections: product.sections?.map(section => section.id.toString()) ?? [],
+            categories: [],
         }
     } else {
         initialForm = {
@@ -39,6 +43,7 @@ export default function FormProduct({ product, onSubmit, sections }: { sections:
             value: 0,
             description: "",
             sections: [],
+            categories: [],
         }
     }
     const [form, setForm] = React.useState<ProductFormData>(initialForm);
@@ -94,8 +99,12 @@ export default function FormProduct({ product, onSubmit, sections }: { sections:
                 </TooltipContent>
             </Tooltip>
 
-            <SelectionSections selectedSections={product?.sections} sections={sections} setForm={setForm} />
-
+            <div className="mb-3">
+                <SelectionSections selectedSections={product?.sections} sections={sections} setForm={setForm} />
+            </div>
+            <div className="mb-3">
+                <SelectionCategories selectedCategories={product?.categories} categories={categories} setForm={setForm} />
+            </div>
             <div>
                 <Label htmlFor="value">Valor</Label>
                 <Input

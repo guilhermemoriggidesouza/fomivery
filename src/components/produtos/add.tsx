@@ -12,8 +12,9 @@ import FormProduct, { ProductFormData } from "./form";
 import { api } from "~/trpc/react";
 import Product from "~/domain/product";
 import Section from "~/domain/section";
+import Category from "~/domain/category";
 
-export default function AddProductModal({ open, setOpen, orgId, onAdd, sections }: { sections: Section[], open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, orgId: number, onAdd: (product: Product) => void }) {
+export default function AddProductModal({ open, setOpen, orgId, onAdd, sections, categories }: { categories: Category[], sections: Section[], open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, orgId: number, onAdd: (product: Product) => void }) {
     const { mutate, isError, } = api.product.create.useMutation({
         onError: (error) => {
             alert("Erro ao cadastrar produto")
@@ -30,15 +31,13 @@ export default function AddProductModal({ open, setOpen, orgId, onAdd, sections 
         })
     }
 
-
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-lg bg-white">
                 <DialogHeader>
                     <DialogTitle>Adicionar novo Produto</DialogTitle>
                 </DialogHeader>
-                <FormProduct onSubmit={addProduct} sections={sections} />
+                <FormProduct onSubmit={addProduct} sections={sections} categories={categories} />
             </DialogContent>
         </Dialog>
     );
