@@ -4,6 +4,7 @@ import Product from "~/domain/product";
 import Section from "~/domain/section";
 import { db } from "~/infra/db";
 import {
+  producCategoryTable,
   productAdditionalTable,
   productSectionTable,
   productTable,
@@ -122,12 +123,21 @@ export default class ProductRepositoryImp implements ProductRepository {
       }))
     }
 
+    if (product.categories) {
+      await Promise.all(product.categories.map(async (category) => {
+        await db.insert(producCategoryTable).values({
+          id_product: product.id,
+          id_category: category.id
+        })
+      }))
+    }
+
     return product
   }
 
-  hasDiffSection(sections: number[], oldSections: number[]) {
-    const toRemove = oldSections.filter(oldSec => !sections.includes(oldSec))
-    const toAdd = sections.filter(sec => !oldSections.includes(sec))
+  hasDiff(newIds: number[], oldIds: number[]) {
+    const toRemove = oldIds.filter(oldSec => !newIds.includes(oldSec))
+    const toAdd = newIds.filter(sec => !oldIds.includes(sec))
 
     return { toRemove, toAdd }
   }
@@ -147,7 +157,7 @@ export default class ProductRepositoryImp implements ProductRepository {
       const productSections = await db.select({ id_section: productSectionTable.id_section })
         .from(productSectionTable)
         .where(eq(productSectionTable.id_product, product.id))
-      const { toAdd, toRemove } = this.hasDiffSection(newSectionsIds, productSections.map(ps => ps.id_section).filter(id => id !== null))
+      const { toAdd, toRemove } = this.hasDiff(newSectionsIds, productSections.map(ps => ps.id_section).filter(id => id !== null))
 
       const listQuerys = []
 
@@ -174,11 +184,51 @@ export default class ProductRepositoryImp implements ProductRepository {
 
       await Promise.all(listQuerys)
     }
+
+    if (product.categories) {
+      const newCategoryIds = product.categories.map(sec => sec.id)
+      const productCategory = await db.select({ id_category: producCategoryTable.id_category })
+        .from(producCategoryTable)
+        .where(eq(producCategoryTable.id_product, product.id))
+      const { toAdd, toRemove } = this.hasDiff(newCategoryIds, productCategory.map(ps => ps.id_category).filter(id => id !== null))
+
+      const listQuerys = []
+
+      listQuerys.push(
+        toAdd.map(async (category) => {
+          await db.insert(producCategoryTable).values({
+            id_product: product.id,
+            id_category: category
+          })
+        })
+      )
+
+      listQuerys.push(
+        toRemove.map(async (category) => {
+          await db.delete(producCategoryTable)
+            .where(
+              and(
+                eq(producCategoryTable.id_product, product.id),
+                eq(producCategoryTable.id_category, category)
+              )
+            )
+        })
+      )
+
+      await Promise.all(listQuerys)
+    }
+
     return product
   }
 
   async delete(productId: number) {
     await db.delete(productSectionTable)
+      .where(
+        and(
+          eq(productSectionTable.id_product, productId),
+        )
+      )
+    await db.delete(producCategoryTable)
       .where(
         and(
           eq(productSectionTable.id_product, productId),
