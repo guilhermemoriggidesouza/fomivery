@@ -25,6 +25,22 @@ export default class CategoryRepositoryImp implements CategoryRepository {
     );
   }
 
+
+  async findByIds(categoryIds: number[]) {
+    const categories = await db
+      .select()
+      .from(categoryTable)
+      .where(
+        inArray(categoryTable.id, categoryIds)
+      )
+    return categories.map(category => new Category(
+      category.id,
+      category.title,
+      category.color,
+      category.org_id,
+    ))
+  }
+
   async create(category: Category) {
     await db.insert(categoryTable).values({
       title: category.title,

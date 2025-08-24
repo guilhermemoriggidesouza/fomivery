@@ -4,6 +4,7 @@ import SectionRepository from "../repositories/section";
 import CategoryRepository from "../repositories/category";
 
 export type inputDTO = {
+    id: number,
     title: string,
     orgId: number,
     obrigatoryAdditional: boolean,
@@ -13,7 +14,7 @@ export type inputDTO = {
     categories: number[],
 };
 
-export default class CreatProductUseCase {
+export default class EditProductUseCase {
     constructor(
         private readonly productRepository: ProductRepository,
         private readonly sectionRepository: SectionRepository,
@@ -26,7 +27,7 @@ export default class CreatProductUseCase {
         const categories = await this.categoryRepository.findByIds(input.categories)
 
         const product = new Product(
-            0,
+            input.id,
             input.title,
             input.orgId,
             input.obrigatoryAdditional,
@@ -39,7 +40,7 @@ export default class CreatProductUseCase {
             sections,
             categories
         );
-        await this.productRepository.create(product)
+        await this.productRepository.edit(product)
         return product;
     }
 }

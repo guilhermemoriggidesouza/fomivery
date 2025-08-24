@@ -27,6 +27,7 @@ export default function AddProductModal({ open, setOpen, orgId, onAdd, sections,
         mutate({
             ...form,
             sections: form.sections.map(sec => Number(sec)),
+            categories: form.categories.map(cat => Number(cat)),
             orgId
         })
     }
